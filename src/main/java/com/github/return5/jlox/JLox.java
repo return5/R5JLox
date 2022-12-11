@@ -26,7 +26,7 @@ public class JLox {
 
     private static void runFile(final String path) throws IOException {
         final byte[] bytes = Files.readAllBytes(Paths.get(path));
-        run(new String(bytes, Charset.defaultCharset()));
+        hadError = run(new String(bytes, Charset.defaultCharset()));
         if (hadError) {
             System.exit(65);
         }
@@ -46,18 +46,20 @@ public class JLox {
         }
     }
 
-    private static void run(final String resource) {
+    private static boolean run(final String resource) {
         final Scanner scanner = new Scanner(resource);
         final List<Token> tokens = scanner.scanTokens();
         tokens.forEach(System.out::println);
+        return hadError;
     }
 
-    static void error(final int line, final String message) {
-        report(line,"",message);
+    static boolean error(final int line, final String message) {
+       hadError = report(line,"",message);
+       return hadError;
     }
 
-    private static void report(final int line, final String where, final String message) {
+    private static boolean report(final int line, final String where, final String message) {
         System.err.println("[line " + line + " ] Error: " + where + ": " + message);
-        hadError = true;
+        return true;
     }
 }
