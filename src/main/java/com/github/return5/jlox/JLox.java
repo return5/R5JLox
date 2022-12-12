@@ -1,5 +1,8 @@
 package main.java.com.github.return5.jlox;
 
+import main.java.com.github.return5.jlox.scanner.Scanner;
+import main.java.com.github.return5.jlox.scanner.Token;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -53,7 +56,7 @@ public class JLox {
         tokens.forEach(System.out::println);
     }
 
-    static void error(final int line, final String message) {
+    public static void error(final int line, final String message) {
         report(line,"",message);
     }
 

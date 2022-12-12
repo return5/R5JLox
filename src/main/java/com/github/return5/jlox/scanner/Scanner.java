@@ -1,9 +1,14 @@
-package main.java.com.github.return5.jlox;
+package main.java.com.github.return5.jlox.scanner;
+
+import main.java.com.github.return5.jlox.JLox;
+import main.java.com.github.return5.jlox.scanner.KeyWordsEnum;
+import main.java.com.github.return5.jlox.scanner.Token;
+import main.java.com.github.return5.jlox.scanner.TokenType;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static main.java.com.github.return5.jlox.TokenType.*;
+import static main.java.com.github.return5.jlox.scanner.TokenType.*;
 
 public class Scanner {
     private final String source;
@@ -11,14 +16,14 @@ public class Scanner {
     private int start = 0;  //first char in lexeme.
     private int current = 0; //current character being scanned.
     private int line = 0;  //current source line.
-    private final Map<String,TokenType> keyWords = Arrays.stream(KeyWordsEnum.values())
+    private final Map<String, TokenType> keyWords = Arrays.stream(KeyWordsEnum.values())
             .collect(Collectors.toUnmodifiableMap(KeyWordsEnum::keyWord, KeyWordsEnum::type));
 
     public Scanner(final String source) {
         this.source = source;
     }
 
-    List<Token<?>> scanTokens() {
+    public List<Token<?>> scanTokens() {
         while(!isAtEnd()) {
             start = current;
             scanToken();
@@ -55,8 +60,8 @@ public class Scanner {
             case '\n' -> line++;
             case '"' -> handleString();
             case '0','1','2','3','4','5','6','7','8','9' -> number();
-            case '_','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p', 'q','r','s','t','u','v','w','x',
-                    'y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P', 'Q','R','S','T','U','V',
+            case '_','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x',
+                    'y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V',
                     'W','X','Y','Z' -> identifier();
             default -> JLox.error(line, "Unexpected character.");
         }
@@ -152,8 +157,8 @@ public class Scanner {
 
     private boolean isAlpha(final char c) {
        return switch(c) {
-           case '_','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p', 'q','r','s','t','u','v','w','x',
-                   'y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P', 'Q','R','S','T','U','V',
+           case '_','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x',
+                   'y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V',
                    'W','X','Y','Z' -> true;
            default -> false;
        };

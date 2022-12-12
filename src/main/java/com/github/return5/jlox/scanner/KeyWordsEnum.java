@@ -1,7 +1,7 @@
-package main.java.com.github.return5.jlox;
+package main.java.com.github.return5.jlox.scanner;
 
 public enum KeyWordsEnum {
-    AND("and",TokenType.AND),
+    AND("and", TokenType.AND),
     DESIGNATION("designation",TokenType.DESIGNATION),
     ELSE("else",TokenType.ELSE),
     FALSE("false",TokenType.FALSE),
