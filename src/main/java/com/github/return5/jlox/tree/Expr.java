@@ -5,6 +5,10 @@ import main.java.com.github.return5.jlox.scanner.Token;
 import java.util.List;
 
 abstract class Expr{
+	private Expr() {
+		super();
+	}
+
  static class Binary<T> extends Expr {
 
 	final Expr left;

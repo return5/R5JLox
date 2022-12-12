@@ -1,4 +1,4 @@
-package main.java.com.github.return5.jlox.tool;
+package main.java.com.github.return5.tool;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -29,6 +29,10 @@ public class Tool {
         writer.println("\t" + stripClassName + "(" + fieldList + ") {" );
         Arrays.stream(fields).map(s -> s.split("final [\\w<>]+ ")[1]).forEach(f -> writer.println("\t\tthis." + f + " = " + f + ";"));
         writer.println("\t}");
+        writer.println();
+        writer.println("\t<R> R accept(finalVisitor<R> visitor) {");
+        writer.println("\t\treturn visitor.visit" + stripClassName + baseName + "(this);");
+        writer.println("\t}");
         writer.println(" }");
     }
 
@@ -40,9 +44,20 @@ public class Tool {
             writer.println("import java.util.List;");
             writer.println();
             writer.println("abstract class " + baseName + "{");
+            defineVisitor(writer,baseName,types);
             types.forEach(e -> defineType(writer,baseName,e.split(":")[0].trim(),e.split(":")[1].trim()));
+            writer.println();
+            writer.println(" abstract<R> R accept(final Visitor<R> visitor);");
             writer.println("}");
         }
 
+    }
+
+    private static void defineVisitor(final PrintWriter writer,final String baseName,final List<String> types) {
+        writer.println(" interface visitor<R> {");
+        types.stream()
+                .map(t -> t.split(":")[0].trim())
+                .forEach(e -> writer.println(" R visit" + e + baseName + "(" + e + " " + baseName.toLowerCase() + ");"));
+        writer.println("}");
     }
 }
