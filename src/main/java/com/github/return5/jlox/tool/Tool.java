@@ -15,7 +15,7 @@ public class Tool {
         }
         final String outputDirectory = args[0];
         defineAst(outputDirectory, "Expr",List.of("Binary<T> : final Expr left, final Token<T> operator, final Expr right",
-                "Grouping : final Expr expression","Literal <T> : final T value","Unary : final Token<T> operator, final Expr right"));
+                "Grouping : final Expr expression","Literal <T> : final T value","Unary<T> : final Token<T> operator, final Expr right"));
 
     }
 
@@ -37,7 +37,7 @@ public class Tool {
         try (PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8)) {
             writer.println("package main.java.com.github.return5.jlox.parser;");
             writer.println();
-            writer.println("import.java.util.List;");
+            writer.println("import java.util.List;");
             writer.println();
             writer.println("abstract class " + baseName + "{");
             types.forEach(e -> defineType(writer,baseName,e.split(":")[0].trim(),e.split(":")[1].trim()));
