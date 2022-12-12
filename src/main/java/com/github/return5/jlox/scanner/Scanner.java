@@ -1,9 +1,6 @@
 package main.java.com.github.return5.jlox.scanner;
 
 import main.java.com.github.return5.jlox.JLox;
-import main.java.com.github.return5.jlox.scanner.KeyWordsEnum;
-import main.java.com.github.return5.jlox.scanner.Token;
-import main.java.com.github.return5.jlox.scanner.TokenType;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -2,49 +2,71 @@ package main.java.com.github.return5.jlox.tree;
 
 import main.java.com.github.return5.jlox.scanner.Token;
 
-import java.util.List;
 
 abstract class Expr{
-	private Expr() {
-		super();
+
+	interface Visitor<R> {
+		R visitBinaryExpr(Binary<?> expr);
+		R visitGroupingExpr(Grouping expr);
+		R visitLiteralExpr(Literal<?> expr);
+		R visitUnaryExpr(Unary<?> expr);
 	}
 
- static class Binary<T> extends Expr {
+	abstract<R> R accept(final Visitor<R> visitor);
 
-	final Expr left;
-	final Token<T> operator;
-	final Expr right;
+	static class Binary<T> extends Expr {
 
-	Binary(final Expr left, final Token<T> operator, final Expr right) {
-		this.left = left;
-		this.operator = operator;
-		this.right = right;
+		final Expr left;
+		final Token<T> operator;
+		final Expr right;
+
+		Binary(final Expr left, final Token<T> operator, final Expr right) {
+			this.left = left;
+			this.operator = operator;
+			this.right = right;
+		}
+
+		<R> R accept(final Visitor<R> visitor) {
+			return visitor.visitBinaryExpr(this);
+		}
 	}
- }
- static class Grouping extends Expr {
+	static class Grouping extends Expr {
 
-	final Expr expression;
+		final Expr expression;
 
-	Grouping(final Expr expression) {
-		this.expression = expression;
+		Grouping(final Expr expression) {
+			this.expression = expression;
+		}
+
+		<R> R accept(final Visitor<R> visitor) {
+			return visitor.visitGroupingExpr(this);
+		}
 	}
- }
- static class Literal <T> extends Expr {
+	static class Literal<T> extends Expr {
 
-	final T value;
+		final T value;
 
-	Literal (final T value) {
-		this.value = value;
+		Literal(final T value) {
+			this.value = value;
+		}
+
+		<R> R accept(final Visitor<R> visitor) {
+			return visitor.visitLiteralExpr(this);
+		}
 	}
- }
- static class Unary<T> extends Expr {
+	static class Unary<T> extends Expr {
 
-	final Token<T> operator;
-	final Expr right;
+		final Token<T> operator;
+		final Expr right;
 
-	Unary(final Token<T> operator, final Expr right) {
-		this.operator = operator;
-		this.right = right;
+		Unary(final Token<T> operator, final Expr right) {
+			this.operator = operator;
+			this.right = right;
+		}
+
+		<R> R accept(final Visitor<R> visitor) {
+			return visitor.visitUnaryExpr(this);
+		}
 	}
- }
+
 }
