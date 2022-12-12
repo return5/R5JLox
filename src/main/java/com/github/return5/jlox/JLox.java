@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class JLox {
 
@@ -26,7 +27,7 @@ public class JLox {
 
     private static void runFile(final String path) throws IOException {
         final byte[] bytes = Files.readAllBytes(Paths.get(path));
-        hadError = run(new String(bytes, Charset.defaultCharset()));
+        run(new String(bytes, Charset.defaultCharset()));
         if (hadError) {
             System.exit(65);
         }
@@ -46,20 +47,18 @@ public class JLox {
         }
     }
 
-    private static boolean run(final String resource) {
+    private static void run(final String resource) {
         final Scanner scanner = new Scanner(resource);
-        final List<Token> tokens = scanner.scanTokens();
+        final List<Token<?>> tokens = scanner.scanTokens();
         tokens.forEach(System.out::println);
-        return hadError;
     }
 
-    static boolean error(final int line, final String message) {
-       hadError = report(line,"",message);
-       return hadError;
+    static void error(final int line, final String message) {
+        report(line,"",message);
     }
 
-    private static boolean report(final int line, final String where, final String message) {
+    private static void report(final int line, final String where, final String message) {
         System.err.println("[line " + line + " ] Error: " + where + ": " + message);
-        return true;
+        hadError = true;
     }
 }
