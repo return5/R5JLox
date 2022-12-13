@@ -1,7 +1,7 @@
 package main.java.com.github.return5.jlox;
 
 import main.java.com.github.return5.jlox.scanner.Scanner;
-import main.java.com.github.return5.jlox.scanner.Token;
+import main.java.com.github.return5.jlox.token.Token;
 
 import java.io.BufferedReader;
 import java.io.IOException;

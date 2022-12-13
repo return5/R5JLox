@@ -1,11 +1,13 @@
 package main.java.com.github.return5.jlox.scanner;
 
 import main.java.com.github.return5.jlox.JLox;
+import main.java.com.github.return5.jlox.token.Token;
+import main.java.com.github.return5.jlox.token.TokenType;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static main.java.com.github.return5.jlox.scanner.TokenType.*;
+import static main.java.com.github.return5.jlox.token.TokenType.*;
 
 public class Scanner {
     private final String source;

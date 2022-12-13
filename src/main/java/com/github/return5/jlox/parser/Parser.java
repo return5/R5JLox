@@ -1,13 +1,13 @@
 package main.java.com.github.return5.jlox.parser;
 
-import main.java.com.github.return5.jlox.scanner.Token;
-import main.java.com.github.return5.jlox.scanner.TokenType;
+import main.java.com.github.return5.jlox.token.Token;
+import main.java.com.github.return5.jlox.token.TokenType;
 import main.java.com.github.return5.jlox.tree.Expr;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-import static main.java.com.github.return5.jlox.scanner.TokenType.*;
+import static main.java.com.github.return5.jlox.token.TokenType.*;
 
 public class Parser{
     private final List<Token<?>> tokens;

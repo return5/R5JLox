@@ -1,7 +1,5 @@
 package main.java.com.github.return5.jlox.printer;
 
-import main.java.com.github.return5.jlox.scanner.Token;
-import main.java.com.github.return5.jlox.scanner.TokenType;
 import main.java.com.github.return5.jlox.tree.Expr;
 
 import java.util.Arrays;
