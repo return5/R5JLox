@@ -1,5 +1,6 @@
 package main.java.com.github.return5.jlox.parser;
 
+import main.java.com.github.return5.jlox.ErrorHandler.ParserErrorHandler;
 import main.java.com.github.return5.jlox.token.Token;
 import main.java.com.github.return5.jlox.token.TokenType;
 import main.java.com.github.return5.jlox.tree.Expr;
@@ -12,9 +13,11 @@ import static main.java.com.github.return5.jlox.token.TokenType.*;
 public class Parser{
     private final List<Token<?>> tokens;
     private int current;
+    private ParserErrorHandler errorHandler;
 
-    Parser (final List<Token<?>> tokens) {
+    Parser (final List<Token<?>> tokens,final ParserErrorHandler errorHandler) {
         this.tokens = tokens;
+        this.errorHandler = errorHandler;
     }
 
     private Expr expression() {
@@ -91,7 +94,7 @@ public class Parser{
         if(isAtEnd()) {
             return false;
         }
-        return peek().type == type;
+        return peek().getType() == type;
     }
 
     private Token<?> advance() {
@@ -101,8 +104,15 @@ public class Parser{
         return previous();
     }
 
+    private Token<?> consume(final TokenType type, final String message) {
+        if(check(type)) {
+            return advance();
+        }
+        throw errorHandler.error(peek(),message);
+    }
+
     private boolean isAtEnd() {
-        return peek().type == EOF;
+        return peek().getType() == EOF;
     }
 
     private Token<?> peek() {
@@ -112,5 +122,6 @@ public class Parser{
     private Token<?> previous() {
         return tokens.get(current - 1);
     }
+
 
 }

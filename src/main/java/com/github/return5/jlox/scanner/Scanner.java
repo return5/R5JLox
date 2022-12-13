@@ -1,5 +1,6 @@
 package main.java.com.github.return5.jlox.scanner;
 
+import main.java.com.github.return5.jlox.ErrorHandler.ParserErrorHandler;
 import main.java.com.github.return5.jlox.JLox;
 import main.java.com.github.return5.jlox.token.Token;
 import main.java.com.github.return5.jlox.token.TokenType;
@@ -17,9 +18,11 @@ public class Scanner {
     private int line = 0;  //current source line.
     private final Map<String, TokenType> keyWords = Arrays.stream(KeyWordsEnum.values())
             .collect(Collectors.toUnmodifiableMap(KeyWordsEnum::keyWord, KeyWordsEnum::type));
+    private final ParserErrorHandler errorHandler;
 
-    public Scanner(final String source) {
+    public Scanner(final String source, final ParserErrorHandler errorHandler) {
         this.source = source;
+        this.errorHandler = errorHandler;
     }
 
     public List<Token<?>> scanTokens() {
@@ -62,7 +65,7 @@ public class Scanner {
             case '_','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x',
                     'y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V',
                     'W','X','Y','Z' -> identifier();
-            default -> JLox.error(line, "Unexpected character.");
+            default -> errorHandler.error(line, "Unexpected character.");
         }
     }
 
@@ -116,7 +119,7 @@ public class Scanner {
             advance();
         }
         if (isAtEnd()) {
-            JLox.error(line,"Unterminated String.");
+            errorHandler.error(line,"Unterminated String.");
             return;
         }
         advance();

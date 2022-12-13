@@ -1,5 +1,6 @@
 package main.java.com.github.return5.jlox;
 
+import main.java.com.github.return5.jlox.ErrorHandler.ParserErrorHandler;
 import main.java.com.github.return5.jlox.scanner.Scanner;
 import main.java.com.github.return5.jlox.token.Token;
 
@@ -16,27 +17,28 @@ public class JLox {
     static boolean hadError = false;
 
     public static void main(final String[] args) throws IOException {
+        final ParserErrorHandler errorHandler = new ParserErrorHandler();
         if (args.length > 1) {
             System.out.println("Usage: jlox [script]");
             System.exit(64);
         }
         else if (args.length == 1){
-            runFile(args[0]);
+            runFile(args[0],errorHandler);
         }
         else {
-            repl();
+            repl(errorHandler);
         }
     }
 
-    private static void runFile(final String path) throws IOException {
+    private static void runFile(final String path,final ParserErrorHandler errorHandler) throws IOException {
         final byte[] bytes = Files.readAllBytes(Paths.get(path));
-        run(new String(bytes, Charset.defaultCharset()));
-        if (hadError) {
+        run(new String(bytes, Charset.defaultCharset()),errorHandler);
+        if (errorHandler.isHadError()) {
             System.exit(65);
         }
     }
 
-    private static void repl() throws IOException {
+    private static void repl(final ParserErrorHandler errorHandler) throws IOException {
         final InputStreamReader input = new InputStreamReader(System.in);
         final BufferedReader reader = new BufferedReader(input);
         while(true) {
@@ -45,23 +47,16 @@ public class JLox {
             if(line == null) {
                 break;
             }
-            run(line);
-            hadError = false;
+            run(line,errorHandler);
+            errorHandler.setHadError(false);
         }
     }
 
-    private static void run(final String resource) {
-        final Scanner scanner = new Scanner(resource);
+    private static void run(final String resource,final ParserErrorHandler errorHandler) {
+        final Scanner scanner = new Scanner(resource,errorHandler);
         final List<Token<?>> tokens = scanner.scanTokens();
         tokens.forEach(System.out::println);
     }
 
-    public static void error(final int line, final String message) {
-        report(line,"",message);
-    }
 
-    private static void report(final int line, final String where, final String message) {
-        System.err.println("[line " + line + " ] Error: " + where + ": " + message);
-        hadError = true;
-    }
 }
