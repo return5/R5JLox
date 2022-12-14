@@ -1,6 +1,6 @@
-package main.java.com.github.return5.jlox.scanner;
+package main.java.com.github.return5.r5jlox.scanner;
 
-import main.java.com.github.return5.jlox.token.TokenType;
+import main.java.com.github.return5.r5jlox.token.TokenType;
 
 public enum KeyWordsEnum {
     AND("and", TokenType.AND),

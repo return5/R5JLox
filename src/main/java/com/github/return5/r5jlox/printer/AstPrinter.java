@@ -1,6 +1,6 @@
-package main.java.com.github.return5.jlox.printer;
+package main.java.com.github.return5.r5jlox.printer;
 
-import main.java.com.github.return5.jlox.tree.Expr;
+import main.java.com.github.return5.r5jlox.tree.Expr;
 
 import java.util.Arrays;
 

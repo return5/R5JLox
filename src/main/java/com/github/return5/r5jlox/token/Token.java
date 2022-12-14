@@ -1,4 +1,4 @@
-package main.java.com.github.return5.jlox.token;
+package main.java.com.github.return5.r5jlox.token;
 
 public class Token <T> {
     final TokenType type;

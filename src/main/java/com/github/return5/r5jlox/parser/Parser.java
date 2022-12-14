@@ -1,15 +1,15 @@
-package main.java.com.github.return5.jlox.parser;
+package main.java.com.github.return5.r5jlox.parser;
 
-import main.java.com.github.return5.jlox.errorhandler.ParseError;
-import main.java.com.github.return5.jlox.errorhandler.ParserErrorHandler;
-import main.java.com.github.return5.jlox.token.Token;
-import main.java.com.github.return5.jlox.token.TokenType;
-import main.java.com.github.return5.jlox.tree.Expr;
+import main.java.com.github.return5.r5jlox.errorhandler.ParseError;
+import main.java.com.github.return5.r5jlox.errorhandler.ParserErrorHandler;
+import main.java.com.github.return5.r5jlox.token.Token;
+import main.java.com.github.return5.r5jlox.token.TokenType;
+import main.java.com.github.return5.r5jlox.tree.Expr;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-import static main.java.com.github.return5.jlox.token.TokenType.*;
+import static main.java.com.github.return5.r5jlox.token.TokenType.*;
 
 public class Parser{
     private final List<Token<?>> tokens;

@@ -1,6 +1,6 @@
-package main.java.com.github.return5.jlox.tree;
+package main.java.com.github.return5.r5jlox.tree;
 
-import main.java.com.github.return5.jlox.token.Token;
+import main.java.com.github.return5.r5jlox.token.Token;
 
 
 public abstract class Expr{

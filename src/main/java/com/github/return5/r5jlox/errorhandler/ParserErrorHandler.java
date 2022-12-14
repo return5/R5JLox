@@ -1,7 +1,7 @@
-package main.java.com.github.return5.jlox.errorhandler;
+package main.java.com.github.return5.r5jlox.errorhandler;
 
-import main.java.com.github.return5.jlox.token.Token;
-import main.java.com.github.return5.jlox.token.TokenType;
+import main.java.com.github.return5.r5jlox.token.Token;
+import main.java.com.github.return5.r5jlox.token.TokenType;
 
 public class ParserErrorHandler {
 

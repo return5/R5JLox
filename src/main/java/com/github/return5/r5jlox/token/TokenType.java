@@ -1,4 +1,4 @@
-package main.java.com.github.return5.jlox.token;
+package main.java.com.github.return5.r5jlox.token;
 
 public enum TokenType {
     LEFT_PAREN,RIGHT_PAREN,LEFT_BRACE,RIGHT_BRACE,

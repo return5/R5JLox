@@ -1,11 +1,11 @@
-package main.java.com.github.return5.jlox;
+package main.java.com.github.return5.r5jlox;
 
-import main.java.com.github.return5.jlox.errorhandler.ParserErrorHandler;
-import main.java.com.github.return5.jlox.parser.Parser;
-import main.java.com.github.return5.jlox.printer.AstPrinter;
-import main.java.com.github.return5.jlox.scanner.Scanner;
-import main.java.com.github.return5.jlox.token.Token;
-import main.java.com.github.return5.jlox.tree.Expr;
+import main.java.com.github.return5.r5jlox.errorhandler.ParserErrorHandler;
+import main.java.com.github.return5.r5jlox.parser.Parser;
+import main.java.com.github.return5.r5jlox.printer.AstPrinter;
+import main.java.com.github.return5.r5jlox.scanner.Scanner;
+import main.java.com.github.return5.r5jlox.token.Token;
+import main.java.com.github.return5.r5jlox.tree.Expr;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class JLox {
+public class R5JLox {
 
     public static void main(final String[] args) throws IOException {
         if (args.length > 1) {
