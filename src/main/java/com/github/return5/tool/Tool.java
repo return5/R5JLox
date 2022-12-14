@@ -30,7 +30,9 @@ public class Tool {
         final String[] fields = fieldList.split(", ");
         Arrays.stream(fields).forEach(f -> writer.println("\t\t" + f + ";"));
         writer.println();
-        writer.println("\t\t" + stripClassName + "(" + fieldList + ") {" );
+        //generate Constructor
+        writer.println("\t\tpublic " + stripClassName + "(" + fieldList + ") {" );
+        //inside fo constructor, initialize parameters.
         Arrays.stream(fields).map(s -> s.split("final [\\w<>]+ ")[1]).forEach(f -> writer.println("\t\t\tthis." + f + " = " + f + ";"));
         writer.println("\t\t}");
         writer.println();
