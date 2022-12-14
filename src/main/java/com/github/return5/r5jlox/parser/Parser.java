@@ -1,6 +1,6 @@
 package main.java.com.github.return5.r5jlox.parser;
 
-import main.java.com.github.return5.r5jlox.errorhandler.ParseError;
+import main.java.com.github.return5.r5jlox.errors.ParseError;
 import main.java.com.github.return5.r5jlox.errorhandler.ParserErrorHandler;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.token.TokenType;
