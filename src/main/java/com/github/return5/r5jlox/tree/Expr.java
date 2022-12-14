@@ -1,7 +1,6 @@
-package main.java.com.github.return5.r5jlox.tree;
+package main.java.com.github.return5.r5jlox.tree;  //TODO fill in the correct package here
 
 import main.java.com.github.return5.r5jlox.token.Token;
-
 
 public abstract class Expr{
 
@@ -10,6 +9,7 @@ public abstract class Expr{
 		R visitGroupingExpr(Grouping expr);
 		R visitLiteralExpr(Literal<?> expr);
 		R visitUnaryExpr(Unary<?> expr);
+		R visitVariableExpr(Variable<?> expr);
 	}
 
 	public abstract<R> R accept(final Visitor<R> visitor);
@@ -19,18 +19,6 @@ public abstract class Expr{
 		final Expr left;
 		final Token<T> operator;
 		final Expr right;
-
-		public Expr getLeft() {
-			return left;
-		}
-
-		public Token<T> getOperator() {
-			return operator;
-		}
-
-		public Expr getRight() {
-			return right;
-		}
 
 		public Binary(final Expr left, final Token<T> operator, final Expr right) {
 			this.left = left;
@@ -50,10 +38,6 @@ public abstract class Expr{
 			this.expression = expression;
 		}
 
-		public Expr getExpression() {
-			return expression;
-		}
-
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitGroupingExpr(this);
 		}
@@ -64,10 +48,6 @@ public abstract class Expr{
 
 		public Literal(final T value) {
 			this.value = value;
-		}
-
-		public T getValue() {
-			return value;
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {
@@ -84,16 +64,20 @@ public abstract class Expr{
 			this.right = right;
 		}
 
-		public Token<T> getOperator() {
-			return operator;
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitUnaryExpr(this);
 		}
+	}
+	public static class Variable<T> extends Expr {
 
-		public Expr getRight() {
-			return right;
+		final Token<T> name;
+
+		public Variable(final Token<T> name) {
+			this.name = name;
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {
-			return visitor.visitUnaryExpr(this);
+			return visitor.visitVariableExpr(this);
 		}
 	}
 
