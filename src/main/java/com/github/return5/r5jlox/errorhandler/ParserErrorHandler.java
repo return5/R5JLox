@@ -1,6 +1,7 @@
 package main.java.com.github.return5.r5jlox.errorhandler;
 
 import main.java.com.github.return5.r5jlox.errors.ParseError;
+import main.java.com.github.return5.r5jlox.errors.R5JloxRuntimeError;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.token.TokenType;
 
@@ -9,6 +10,7 @@ public class ParserErrorHandler {
     private static final ParserErrorHandler self = new ParserErrorHandler();
 
     private boolean hadError = false;
+    private boolean hadRuntimeError = false;
 
     public void error(final int line, final String message) {
         report(line,"",message);
@@ -47,5 +49,14 @@ public class ParserErrorHandler {
 
     private ParserErrorHandler() {
        super();
+    }
+
+    public boolean isHadRuntimeError() {
+        return hadRuntimeError;
+    }
+
+    public void runtimeError(final R5JloxRuntimeError e) {
+        System.err.println(e.getMessage() + "\n[Line " + e.getToken().getLine() + "]");
+        hadRuntimeError = true;
     }
 }

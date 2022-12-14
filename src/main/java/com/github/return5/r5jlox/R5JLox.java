@@ -1,6 +1,7 @@
 package main.java.com.github.return5.r5jlox;
 
 import main.java.com.github.return5.r5jlox.errorhandler.ParserErrorHandler;
+import main.java.com.github.return5.r5jlox.interpreter.Interpreter;
 import main.java.com.github.return5.r5jlox.parser.Parser;
 import main.java.com.github.return5.r5jlox.printer.AstPrinter;
 import main.java.com.github.return5.r5jlox.scanner.Scanner;
@@ -37,6 +38,9 @@ public class R5JLox {
         if (errorHandler.isHadError()) {
             System.exit(65);
         }
+        if(errorHandler.isHadRuntimeError()) {
+            System.exit(70);
+        }
     }
 
     private static void repl() throws IOException {
@@ -56,16 +60,17 @@ public class R5JLox {
 
     private static void run(final String resource) {
         final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
+        final Interpreter interpreter = Interpreter.getInterpreter();
         final Scanner scanner = new Scanner(resource);
         final List<Token<?>> tokens = scanner.scanTokens();
-        System.out.println("got through scanner");
         //tokens.forEach(System.out::println);
         final Parser parser = new Parser(tokens);
         final Expr expr = parser.parse();
         if(errorHandler.isHadError()) {
             return;
         }
-        System.out.println(new AstPrinter().print(expr));
+        //System.out.println(new AstPrinter().print(expr));
+        interpreter.interpret(expr);
     }
 
 

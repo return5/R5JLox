@@ -1,5 +1,6 @@
 package main.java.com.github.return5.r5jlox.interpreter;
 
+import main.java.com.github.return5.r5jlox.errorhandler.ParserErrorHandler;
 import main.java.com.github.return5.r5jlox.errors.R5JloxRuntimeError;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.tree.Expr;
@@ -8,6 +9,18 @@ import java.util.function.BinaryOperator;
 
 
 public class Interpreter implements Expr.Visitor<Object>{
+
+
+    private static final Interpreter interpreter = new Interpreter();
+
+
+    private Interpreter() {
+        super();
+    }
+
+    public static Interpreter getInterpreter() {
+        return interpreter;
+    }
 
     @Override
     public Object visitBinaryExpr(final Expr.Binary<?> expr) {
@@ -100,8 +113,28 @@ public class Interpreter implements Expr.Visitor<Object>{
         throw new R5JloxRuntimeError(operator,"Operands must be Strings.");
     }
 
-
     private Object evaluate(final Expr expr) {
         return expr.accept(this);
+    }
+
+   public void interpret(final Expr expression) {
+        final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
+        try {
+            final Object value = evaluate(expression);
+            System.out.println(stringify(value));
+        }catch(final R5JloxRuntimeError e) {
+            errorHandler.runtimeError(e);
+        }
+    }
+
+    private String stringify(final Object obj) {
+        if(obj == null) {
+            return "nil";
+        }
+        final String text = obj.toString();
+        if(obj instanceof Double && text.endsWith(".0")) {
+            return text.substring(0,text.length() - 2);
+        }
+        return text;
     }
 }
