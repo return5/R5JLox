@@ -2,17 +2,17 @@ package main.java.com.github.return5.r5jlox.interpreter;
 
 import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.errors.R5JloxRuntimeError;
+import main.java.com.github.return5.r5jlox.stmt.Stmt;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.tree.Expr;
 
+import java.util.List;
 import java.util.function.BinaryOperator;
 
 
-public class Interpreter implements Expr.Visitor<Object> {
-
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private static final Interpreter interpreter = new Interpreter();
-
 
     private Interpreter() {
         super();
@@ -20,6 +20,19 @@ public class Interpreter implements Expr.Visitor<Object> {
 
     public static Interpreter getInterpreter() {
         return interpreter;
+    }
+
+    @Override
+    public Void visitExpressionStmt(final Stmt.Expression stmt) {
+        evaluate(stmt.getExpression());
+        return null;
+    }
+
+    @Override
+    public Void visitSayStmt(final Stmt.Say stmt) {
+        final Object value = evaluate(stmt.getExpression());
+        System.out.println(stringify(value));
+        return null;
     }
 
     @Override
@@ -120,14 +133,17 @@ public class Interpreter implements Expr.Visitor<Object> {
         return expr.accept(this);
     }
 
-    public void interpret(final Expr expression) {
+    public void interpret(final List<Stmt> statements) {
         final ErrorHandler errorHandler = ErrorHandler.getParseErrorHandler();
         try {
-            final Object value = evaluate(expression);
-            System.out.println(stringify(value));
+            statements.forEach(this::execute);
         } catch (final R5JloxRuntimeError e) {
             errorHandler.runtimeError(e);
         }
+    }
+
+    private void execute(final Stmt stmt) {
+        stmt.accept(this);
     }
 
     private String stringify(final Object obj) {
@@ -188,6 +204,5 @@ public class Interpreter implements Expr.Visitor<Object> {
         }
         return (double) left / (double)right;
     }
-
 }
 

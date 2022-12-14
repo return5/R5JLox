@@ -1,11 +1,12 @@
 package main.java.com.github.return5.r5jlox.parser;
 
-import main.java.com.github.return5.r5jlox.errors.ParseError;
 import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
+import main.java.com.github.return5.r5jlox.stmt.Stmt;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.token.TokenType;
 import main.java.com.github.return5.r5jlox.tree.Expr;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -39,12 +40,31 @@ public class Parser{
     }
 
 
-    public Expr parse() {
-        try {
-            return expression();
-        }catch(final ParseError e) {
-            return null;
+    public List<Stmt> parse() {
+        final List<Stmt> statements = new LinkedList<>();
+        while(!isAtEnd()) {
+            statements.add(statement());
         }
+        return statements;
+    }
+
+    private Stmt statement() {
+        if(match(SAY)) {
+            return sayStatment();
+        }
+        return expressionStatment();
+    }
+
+    private Stmt sayStatment() {
+        final Expr value = expression();
+        consume(SEMICOLON, "Expect : after value.");
+        return new Stmt.Say(value);
+    }
+
+    private Stmt expressionStatment() {
+        final Expr value = expression();
+        consume(SEMICOLON, "Expect : after value.");
+        return new Stmt.Expression(value);
     }
 
     private Expr unary() {

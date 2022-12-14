@@ -69,7 +69,7 @@ public class R5JLox {
             return;
         }
         //System.out.println(new AstPrinter().print(expr));
-        interpreter.interpret(expr);
+        interpreter.interpret(statements);
     }
 
 
