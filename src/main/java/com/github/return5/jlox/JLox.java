@@ -15,43 +15,44 @@ import java.util.List;
 public class JLox {
 
     public static void main(final String[] args) throws IOException {
-        final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
         if (args.length > 1) {
             System.out.println("Usage: jlox [script]");
             System.exit(64);
         }
         else if (args.length == 1){
-            runFile(args[0],errorHandler);
+            runFile(args[0]);
         }
         else {
-            repl(errorHandler);
+            repl();
         }
     }
 
-    private static void runFile(final String path,final ParserErrorHandler errorHandler) throws IOException {
+    private static void runFile(final String path) throws IOException {
         final byte[] bytes = Files.readAllBytes(Paths.get(path));
-        run(new String(bytes, Charset.defaultCharset()),errorHandler);
+        final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
+        run(new String(bytes, Charset.defaultCharset()));
         if (errorHandler.isHadError()) {
             System.exit(65);
         }
     }
 
-    private static void repl(final ParserErrorHandler errorHandler) throws IOException {
+    private static void repl() throws IOException {
         final InputStreamReader input = new InputStreamReader(System.in);
         final BufferedReader reader = new BufferedReader(input);
+        final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
         while(true) {
             System.out.print("> ");
             final String line = reader.readLine();
             if(line == null) {
                 break;
             }
-            run(line,errorHandler);
+            run(line);
             errorHandler.setHadError(false);
         }
     }
 
-    private static void run(final String resource,final ParserErrorHandler errorHandler) {
-        final Scanner scanner = new Scanner(resource,errorHandler);
+    private static void run(final String resource) {
+        final Scanner scanner = new Scanner(resource);
         final List<Token<?>> tokens = scanner.scanTokens();
         tokens.forEach(System.out::println);
     }
