@@ -1,9 +1,8 @@
 package main.java.com.github.return5.r5jlox;
 
-import main.java.com.github.return5.r5jlox.errorhandler.ParserErrorHandler;
+import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.interpreter.Interpreter;
 import main.java.com.github.return5.r5jlox.parser.Parser;
-import main.java.com.github.return5.r5jlox.printer.AstPrinter;
 import main.java.com.github.return5.r5jlox.scanner.Scanner;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.tree.Expr;
@@ -33,7 +32,7 @@ public class R5JLox {
 
     private static void runFile(final String path) throws IOException {
         final byte[] bytes = Files.readAllBytes(Paths.get(path));
-        final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
+        final ErrorHandler errorHandler = ErrorHandler.getParseErrorHandler();
         run(new String(bytes, Charset.defaultCharset()));
         if (errorHandler.isHadError()) {
             System.exit(65);
@@ -46,7 +45,7 @@ public class R5JLox {
     private static void repl() throws IOException {
         final InputStreamReader input = new InputStreamReader(System.in);
         final BufferedReader reader = new BufferedReader(input);
-        final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
+        final ErrorHandler errorHandler = ErrorHandler.getParseErrorHandler();
         while(true) {
             System.out.print("> ");
             final String line = reader.readLine();
@@ -59,7 +58,7 @@ public class R5JLox {
     }
 
     private static void run(final String resource) {
-        final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
+        final ErrorHandler errorHandler = ErrorHandler.getParseErrorHandler();
         final Interpreter interpreter = Interpreter.getInterpreter();
         final Scanner scanner = new Scanner(resource);
         final List<Token<?>> tokens = scanner.scanTokens();

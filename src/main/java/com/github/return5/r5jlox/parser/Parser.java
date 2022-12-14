@@ -1,7 +1,7 @@
 package main.java.com.github.return5.r5jlox.parser;
 
 import main.java.com.github.return5.r5jlox.errors.ParseError;
-import main.java.com.github.return5.r5jlox.errorhandler.ParserErrorHandler;
+import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.token.TokenType;
 import main.java.com.github.return5.r5jlox.tree.Expr;
@@ -14,7 +14,7 @@ import static main.java.com.github.return5.r5jlox.token.TokenType.*;
 public class Parser{
     private final List<Token<?>> tokens;
     private int current;
-    private final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
+    private final ErrorHandler errorHandler = ErrorHandler.getParseErrorHandler();
 
     public Parser(final List<Token<?>> tokens) {
         this.tokens = tokens;

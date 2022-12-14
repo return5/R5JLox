@@ -1,6 +1,6 @@
 package main.java.com.github.return5.r5jlox.scanner;
 
-import main.java.com.github.return5.r5jlox.errorhandler.ParserErrorHandler;
+import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.token.TokenType;
 
@@ -17,7 +17,7 @@ public class Scanner {
     private int line = 0;  //current source line.
     private final Map<String, TokenType> keyWords = Arrays.stream(KeyWordsEnum.values())
             .collect(Collectors.toUnmodifiableMap(KeyWordsEnum::keyWord, KeyWordsEnum::type));
-    private final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
+    private final ErrorHandler errorHandler = ErrorHandler.getParseErrorHandler();
 
     public Scanner(final String source) {
         this.source = source;
@@ -143,8 +143,11 @@ public class Scanner {
         if(peek() == '.' && isDigit(peekNext())) {
             advance();
             advanceDigit();
+            addToken(NUMBER,Double.parseDouble(source.substring(start,current)));
         }
-        addToken(NUMBER,Double.parseDouble(source.substring(start,current)));
+        else {
+            addToken(NUMBER, Integer.parseInt(source.substring(start,current)));
+        }
     }
 
     private char peekNext() {
