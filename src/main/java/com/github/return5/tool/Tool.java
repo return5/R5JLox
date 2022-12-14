@@ -17,6 +17,8 @@ public class Tool {
         defineAst(outputDirectory, "Expr",List.of("Binary<T> : final Expr left, final Token<T> operator, final Expr right",
                 "Grouping : final Expr expression","Literal<T> : final T value","Unary<T> : final Token<T> operator, final Expr right"));
 
+        defineAst(outputDirectory,"Stmt",List.of("Expression : final Expr expression","Say : final Expr expression"));
+
     }
 
     private static void defineType(final PrintWriter writer,final String baseName, final String className, final String fieldList) {
@@ -39,9 +41,7 @@ public class Tool {
     private static void defineAst(final String outputDirectory,final String baseName,final List<String> types) throws IOException {
         final String path = outputDirectory + "/" + baseName + ".java";
         try (PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8)) {
-            writer.println("package main.java.com.github.return5.jlox.tree;");
-            writer.println();
-            writer.println("import java.util.List;");
+            writer.println("package main.java.com.github.return5.jlox.;  //TODO fill in the correct package here");
             writer.println();
             writer.println("abstract class " + baseName + "{");
             writer.println();
