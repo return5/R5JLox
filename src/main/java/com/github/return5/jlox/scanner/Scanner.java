@@ -1,7 +1,6 @@
 package main.java.com.github.return5.jlox.scanner;
 
-import main.java.com.github.return5.jlox.ErrorHandler.ParserErrorHandler;
-import main.java.com.github.return5.jlox.JLox;
+import main.java.com.github.return5.jlox.errorhandler.ParserErrorHandler;
 import main.java.com.github.return5.jlox.token.Token;
 import main.java.com.github.return5.jlox.token.TokenType;
 
@@ -18,11 +17,10 @@ public class Scanner {
     private int line = 0;  //current source line.
     private final Map<String, TokenType> keyWords = Arrays.stream(KeyWordsEnum.values())
             .collect(Collectors.toUnmodifiableMap(KeyWordsEnum::keyWord, KeyWordsEnum::type));
-    private final ParserErrorHandler errorHandler;
+    private final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
 
-    public Scanner(final String source, final ParserErrorHandler errorHandler) {
+    public Scanner(final String source) {
         this.source = source;
-        this.errorHandler = errorHandler;
     }
 
     public List<Token<?>> scanTokens() {

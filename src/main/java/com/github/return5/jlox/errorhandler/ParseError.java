@@ -1,4 +1,4 @@
-package main.java.com.github.return5.jlox.ErrorHandler;
+package main.java.com.github.return5.jlox.errorhandler;
 
 public class ParseError extends RuntimeException {
     ParseError() {

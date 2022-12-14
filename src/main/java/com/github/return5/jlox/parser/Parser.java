@@ -1,6 +1,6 @@
 package main.java.com.github.return5.jlox.parser;
 
-import main.java.com.github.return5.jlox.ErrorHandler.ParserErrorHandler;
+import main.java.com.github.return5.jlox.errorhandler.ParserErrorHandler;
 import main.java.com.github.return5.jlox.token.Token;
 import main.java.com.github.return5.jlox.token.TokenType;
 import main.java.com.github.return5.jlox.tree.Expr;
@@ -13,11 +13,10 @@ import static main.java.com.github.return5.jlox.token.TokenType.*;
 public class Parser{
     private final List<Token<?>> tokens;
     private int current;
-    private ParserErrorHandler errorHandler;
+    private final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
 
-    Parser (final List<Token<?>> tokens,final ParserErrorHandler errorHandler) {
+    Parser (final List<Token<?>> tokens) {
         this.tokens = tokens;
-        this.errorHandler = errorHandler;
     }
 
     private Expr expression() {
@@ -78,6 +77,19 @@ public class Parser{
             expr = new Expr.Binary<>(expr,operator,right);
         }
         return expr;
+    }
+
+
+    private void synchronize() {
+        advance();
+        while(!isAtEnd()) {
+            if(previous().getType() == SEMICOLON) {
+                return;
+            }
+            switch(peek().getType()) {
+                case ->
+            }
+        }
     }
 
     private boolean match(final TokenType...types) {

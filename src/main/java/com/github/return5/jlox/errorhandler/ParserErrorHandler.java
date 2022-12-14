@@ -1,9 +1,11 @@
-package main.java.com.github.return5.jlox.ErrorHandler;
+package main.java.com.github.return5.jlox.errorhandler;
 
 import main.java.com.github.return5.jlox.token.Token;
 import main.java.com.github.return5.jlox.token.TokenType;
 
 public class ParserErrorHandler {
+
+    private static final ParserErrorHandler self = new ParserErrorHandler();
 
     private boolean hadError = false;
 
@@ -34,8 +36,15 @@ public class ParserErrorHandler {
         return hadError;
     }
 
-    public ParserErrorHandler setHadError(final boolean hadError) {
+    public void setHadError(final boolean hadError) {
         this.hadError = hadError;
-        return this;
+    }
+
+    public static ParserErrorHandler getParseErrorHandler() {
+        return self;
+    }
+
+    private ParserErrorHandler() {
+       super();
     }
 }

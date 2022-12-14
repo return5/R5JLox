@@ -1,6 +1,6 @@
 package main.java.com.github.return5.jlox;
 
-import main.java.com.github.return5.jlox.ErrorHandler.ParserErrorHandler;
+import main.java.com.github.return5.jlox.errorhandler.ParserErrorHandler;
 import main.java.com.github.return5.jlox.scanner.Scanner;
 import main.java.com.github.return5.jlox.token.Token;
 
@@ -14,10 +14,8 @@ import java.util.List;
 
 public class JLox {
 
-    static boolean hadError = false;
-
     public static void main(final String[] args) throws IOException {
-        final ParserErrorHandler errorHandler = new ParserErrorHandler();
+        final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
         if (args.length > 1) {
             System.out.println("Usage: jlox [script]");
             System.exit(64);
