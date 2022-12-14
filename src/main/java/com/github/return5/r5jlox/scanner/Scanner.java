@@ -44,7 +44,7 @@ public class Scanner {
             case '{' -> addToken(LEFT_BRACE);
             case '}' -> addToken(RIGHT_BRACE);
             case ',' -> addToken(COMMA);
-            case '.' -> addToken(DOT);
+            case '.' -> addToken(match('.') ? CONCAT : DOT);
             case '-' -> addToken(MINUS);
             case '+' -> addToken(PLUS);
             case ';' -> addToken(SEMICOLON);

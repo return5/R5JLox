@@ -31,7 +31,7 @@ public class Parser{
     }
 
     private Expr term() {
-        return leftAssociate(this::factor,MINUS,PLUS);
+        return leftAssociate(this::factor,MINUS,PLUS,CONCAT);
     }
 
     private Expr factor() {

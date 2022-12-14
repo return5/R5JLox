@@ -58,6 +58,7 @@ public class R5JLox {
         final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
         final Scanner scanner = new Scanner(resource);
         final List<Token<?>> tokens = scanner.scanTokens();
+        System.out.println("got through scanner");
         //tokens.forEach(System.out::println);
         final Parser parser = new Parser(tokens);
         final Expr expr = parser.parse();
@@ -65,7 +66,6 @@ public class R5JLox {
             return;
         }
         System.out.println(new AstPrinter().print(expr));
-
     }
 
 

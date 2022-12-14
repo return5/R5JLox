@@ -11,7 +11,7 @@ public enum KeyWordsEnum {
     FOR("for",TokenType.FOR),
 	IF("if",TokenType.IF),
 	NIL("nil",TokenType.NIL),
-	PRINT("print",TokenType.SAY),
+	PRINT("say",TokenType.SAY),
 	RETURN("return",TokenType.RETURN),
 	SUPER("super",TokenType.SUPER),
 	SELF("self",TokenType.SELF),
