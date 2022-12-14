@@ -1,5 +1,6 @@
 package main.java.com.github.return5.jlox.parser;
 
+import main.java.com.github.return5.jlox.errorhandler.ParseError;
 import main.java.com.github.return5.jlox.errorhandler.ParserErrorHandler;
 import main.java.com.github.return5.jlox.token.Token;
 import main.java.com.github.return5.jlox.token.TokenType;
@@ -15,18 +16,15 @@ public class Parser{
     private int current;
     private final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
 
-    Parser (final List<Token<?>> tokens) {
+    public Parser(final List<Token<?>> tokens) {
         this.tokens = tokens;
     }
 
-    private Expr expression() {
-        return equality();
-    }
+    private Expr expression() { return equality(); }
 
     private Expr equality() {
         return leftAssociate(this::comparison,BANG_EQUAL,EQUAL_EQUAL);
     }
-
 
     private Expr comparison() {
         return leftAssociate(this::term,GREATER,GREATER_EQUAL,LESS,LESS_EQUAL);
@@ -38,6 +36,15 @@ public class Parser{
 
     private Expr factor() {
         return leftAssociate(this::unary,STAR,SLASH);
+    }
+
+
+    public Expr parse() {
+        try {
+            return expression();
+        }catch(final ParseError e) {
+            return null;
+        }
     }
 
     private Expr unary() {
@@ -67,6 +74,7 @@ public class Parser{
             consume(RIGHT_PAREN,"Expect ')' after expression");
             return new Expr.Grouping(expr);
         }
+        throw errorHandler.error(peek(),"Expect Expression.");
     }
 
     private Expr leftAssociate(final Supplier<Expr> func,final TokenType...types) {
@@ -87,8 +95,11 @@ public class Parser{
                 return;
             }
             switch(peek().getType()) {
-                case ->
+                case DESIGNATION,STASH,FUNCTI,FOR,IF,WHILE,SAY,RETURN: return;
+                default: // do nothing
+                    break;
             }
+            advance();
         }
     }
 

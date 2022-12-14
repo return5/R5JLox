@@ -1,8 +1,11 @@
 package main.java.com.github.return5.jlox;
 
 import main.java.com.github.return5.jlox.errorhandler.ParserErrorHandler;
+import main.java.com.github.return5.jlox.parser.Parser;
+import main.java.com.github.return5.jlox.printer.AstPrinter;
 import main.java.com.github.return5.jlox.scanner.Scanner;
 import main.java.com.github.return5.jlox.token.Token;
+import main.java.com.github.return5.jlox.tree.Expr;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,9 +55,17 @@ public class JLox {
     }
 
     private static void run(final String resource) {
+        final ParserErrorHandler errorHandler = ParserErrorHandler.getParseErrorHandler();
         final Scanner scanner = new Scanner(resource);
         final List<Token<?>> tokens = scanner.scanTokens();
-        tokens.forEach(System.out::println);
+        //tokens.forEach(System.out::println);
+        final Parser parser = new Parser(tokens);
+        final Expr expr = parser.parse();
+        if(errorHandler.isHadError()) {
+            return;
+        }
+        System.out.println(new AstPrinter().print(expr));
+
     }
 
 

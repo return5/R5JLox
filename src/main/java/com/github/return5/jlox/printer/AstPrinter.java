@@ -38,7 +38,7 @@ public class AstPrinter implements Expr.Visitor<String>{
         return builder.toString();
     }
 
-    String print(final Expr expr) {
+    public String print(final Expr expr) {
         return expr.accept(this);
     }
 
