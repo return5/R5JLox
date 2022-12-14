@@ -26,6 +26,18 @@ public abstract class Expr{
 			this.right = right;
 		}
 
+		public Expr getLeft() {
+			return left;
+		}
+
+		public Token<T> getOperator() {
+			return operator;
+		}
+
+		public Expr getRight() {
+			return right;
+		}
+
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitBinaryExpr(this);
 		}
@@ -38,6 +50,10 @@ public abstract class Expr{
 			this.expression = expression;
 		}
 
+		public Expr getExpression() {
+			return expression;
+		}
+
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitGroupingExpr(this);
 		}
@@ -48,6 +64,10 @@ public abstract class Expr{
 
 		public Literal(final T value) {
 			this.value = value;
+		}
+
+		public T getValue() {
+			return value;
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {
@@ -64,6 +84,14 @@ public abstract class Expr{
 			this.right = right;
 		}
 
+		public Token<T> getOperator() {
+			return operator;
+		}
+
+		public Expr getRight() {
+			return right;
+		}
+
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitUnaryExpr(this);
 		}
@@ -71,6 +99,10 @@ public abstract class Expr{
 	public static class Variable<T> extends Expr {
 
 		final Token<T> name;
+
+		public Token<T> getName() {
+			return name;
+		}
 
 		public Variable(final Token<T> name) {
 			this.name = name;

@@ -19,7 +19,7 @@ public class Tool {
                 "Variable<T> : final Token<T> name"));
 
         defineAst(outputDirectory,"Stmt",List.of("Expression : final Expr expression",
-                "Say : final Expr expression","stash<T> : final Token<T> name, final Expr initializer"));
+                "Say : final Expr expression","Stash<T> : final Token<T> name, final Expr initializer"));
 
     }
 

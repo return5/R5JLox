@@ -13,6 +13,7 @@ import java.util.function.BinaryOperator;
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private static final Interpreter interpreter = new Interpreter();
+    private final Enviroment enviroment = new Enviroment();
 
     private Interpreter() {
         super();
@@ -20,6 +21,18 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     public static Interpreter getInterpreter() {
         return interpreter;
+    }
+
+    @Override
+    public Void visitStashStmt(final Stmt.Stash<?> stmt) {
+        final Object value = (stmt.getInitializer() != null)? evalute(stmt.getInitializer()) : null;
+        enviroment.define(stmt.getName().getLexeme(),value);
+        return null;
+    }
+
+    @Override
+    public Object visitVariableExpr(Expr.Variable<?> expr) {
+        return enviroment.get(expr.getName());
     }
 
     @Override

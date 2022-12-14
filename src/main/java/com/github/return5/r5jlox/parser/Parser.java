@@ -1,6 +1,7 @@
 package main.java.com.github.return5.r5jlox.parser;
 
 import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
+import main.java.com.github.return5.r5jlox.errors.ParseError;
 import main.java.com.github.return5.r5jlox.stmt.Stmt;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.token.TokenType;
@@ -43,25 +44,44 @@ public class Parser{
     public List<Stmt> parse() {
         final List<Stmt> statements = new LinkedList<>();
         while(!isAtEnd()) {
-            statements.add(statement());
+            statements.add(declaration());
         }
         return statements;
     }
 
     private Stmt statement() {
         if(match(SAY)) {
-            return sayStatment();
+            return sayStatement();
         }
-        return expressionStatment();
+        return expressionStatement();
     }
 
-    private Stmt sayStatment() {
+    private Stmt declaration() {
+        try {
+            if(match(STASH)) {
+                return varDeclaration();
+            }
+            return statement();
+        }catch(final ParseError error) {
+            synchronize();
+            return null;
+        }
+    }
+
+    private Stmt varDeclaration() {
+        final Token<?> name = consume(IDENTIFIER,"Expect variable name.");
+        final Expr initializer = (match(EQUAL)) ? expression() : null;
+        consume(SEMICOLON,"Expect ';' after variable declaration.");
+        return new Stmt.Stash<>(name,initializer);
+    }
+
+    private Stmt sayStatement() {
         final Expr value = expression();
         consume(SEMICOLON, "Expect : after value.");
         return new Stmt.Say(value);
     }
 
-    private Stmt expressionStatment() {
+    private Stmt expressionStatement() {
         final Expr value = expression();
         consume(SEMICOLON, "Expect : after value.");
         return new Stmt.Expression(value);
@@ -88,6 +108,9 @@ public class Parser{
         }
         if(match(NUMBER,STRING)) {
             return new Expr.Literal<>(previous().getLiteral());
+        }
+        if(match(IDENTIFIER)) {
+            return new Expr.Variable<>(previous());
         }
         if(match(LEFT_PAREN)) {
             final Expr expr = expression();

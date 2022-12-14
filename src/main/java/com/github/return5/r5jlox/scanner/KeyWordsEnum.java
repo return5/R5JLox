@@ -16,7 +16,7 @@ public enum KeyWordsEnum {
 	SUPER("super",TokenType.SUPER),
 	SELF("self",TokenType.SELF),
 	TRUE("true",TokenType.TRUE),
-	STASH("stash",TokenType.STASH),
+	STASH("Stash",TokenType.STASH),
 	WHILE("while",TokenType.WHILE);
 
     private final String keyWord;
