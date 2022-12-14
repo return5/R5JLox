@@ -2,7 +2,7 @@ package main.java.com.github.return5.r5jlox.stmt;
 
 import main.java.com.github.return5.r5jlox.tree.Expr;
 
-abstract class Stmt{
+public abstract class Stmt{
 
 	interface Visitor<R> {
 		R visitExpressionStmt(Expression stmt);

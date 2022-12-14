@@ -4,8 +4,8 @@ import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.interpreter.Interpreter;
 import main.java.com.github.return5.r5jlox.parser.Parser;
 import main.java.com.github.return5.r5jlox.scanner.Scanner;
+import main.java.com.github.return5.r5jlox.stmt.Stmt;
 import main.java.com.github.return5.r5jlox.token.Token;
-import main.java.com.github.return5.r5jlox.tree.Expr;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -64,7 +64,7 @@ public class R5JLox {
         final List<Token<?>> tokens = scanner.scanTokens();
         //tokens.forEach(System.out::println);
         final Parser parser = new Parser(tokens);
-        final Expr expr = parser.parse();
+        final List<Stmt> statements = parser.parse();
         if(errorHandler.isHadError()) {
             return;
         }
