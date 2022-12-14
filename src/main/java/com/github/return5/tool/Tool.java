@@ -19,7 +19,7 @@ public class Tool {
                 "Variable<T> : final Token<T> name"));
 
         defineAst(outputDirectory,"Stmt",List.of("Expression : final Expr expression",
-                "Say : final Expr expression","stash : final Token<T> name, final Expr initializer"));
+                "Say : final Expr expression","stash<T> : final Token<T> name, final Expr initializer"));
 
     }
 
@@ -45,7 +45,7 @@ public class Tool {
     private static void defineAst(final String outputDirectory,final String baseName,final List<String> types) throws IOException {
         final String path = outputDirectory + "/" + baseName + ".java";
         try (PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8)) {
-            writer.println("package main.java.com.github.return5.jlox.;  //TODO fill in the correct package here");
+            writer.println("package main.java.com.github.return5.r5jlox.;  //TODO fill in the correct package here");
             writer.println();
             writer.println("public abstract class " + baseName + "{");
             writer.println();
@@ -64,7 +64,7 @@ public class Tool {
         types.stream()
                 .map(t -> t.split(":")[0].trim())
                 .map(t -> t.replace("<T>","<?>"))
-                .forEach(e -> writer.println("\t\tpublic R visit" + e.split("<")[0].trim() + baseName + "(" + e + " " + baseName.toLowerCase() + ");"));
+                .forEach(e -> writer.println("\t\tR visit" + e.split("<")[0].trim() + baseName + "(" + e + " " + baseName.toLowerCase() + ");"));
         writer.println("\t}");
     }
 }
