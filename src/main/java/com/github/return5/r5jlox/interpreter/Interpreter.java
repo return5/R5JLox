@@ -25,7 +25,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitStashStmt(final Stmt.Stash<?> stmt) {
-        final Object value = (stmt.getInitializer() != null)? evalute(stmt.getInitializer()) : null;
+        final Object value = (stmt.getInitializer() != null)? evaluate(stmt.getInitializer()) : null;
         enviroment.define(stmt.getName().getLexeme(),value);
         return null;
     }
