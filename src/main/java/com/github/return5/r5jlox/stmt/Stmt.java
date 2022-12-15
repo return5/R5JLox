@@ -3,12 +3,15 @@ package main.java.com.github.return5.r5jlox.stmt;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.tree.Expr;
 
+import java.util.List;
+
 public abstract class Stmt{
 
 	public interface Visitor<R> {
 		R visitExpressionStmt(Expression stmt);
 		R visitSayStmt(Say stmt);
 		R visitStashStmt(Stash<?> stmt);
+		R visitBlockStmt(Block stmt);
 	}
 
 	public abstract<R> R accept(final Visitor<R> visitor);
@@ -65,6 +68,22 @@ public abstract class Stmt{
 
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitStashStmt(this);
+		}
+	}
+	public static class Block extends Stmt {
+		final List<Stmt> statements;
+
+		public Block(final List<Stmt> statements) {
+			this.statements = statements;
+		}
+
+		public List<Stmt> getStatements() {
+			return this.statements;
+		}
+
+		@Override
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitBlockStmt(this);
 		}
 	}
 

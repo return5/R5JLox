@@ -67,7 +67,19 @@ public class Parser{
         if(match(SAY)) {
             return sayStatement();
         }
+        if(match(LEFT_BRACE)) {
+            return new Stmt.Block(block());
+        }
         return expressionStatement();
+    }
+
+    private List<Stmt> block() {
+        final List<Stmt> statements = new LinkedList<>();
+        while(!check(RIGHT_BRACE) && !isAtEnd()) {
+            statements.add(declaration());
+        }
+        consume(RIGHT_BRACE,"Expect '}' after block.");
+        return statements;
     }
 
     private Stmt declaration() {
@@ -91,13 +103,13 @@ public class Parser{
 
     private Stmt sayStatement() {
         final Expr value = expression();
-        consume(SEMICOLON, "Expect : after value.");
+        consume(SEMICOLON, "Expect ; after value.");
         return new Stmt.Say(value);
     }
 
     private Stmt expressionStatement() {
         final Expr value = expression();
-        consume(SEMICOLON, "Expect : after value.");
+        consume(SEMICOLON, "Expect ; after value.");
         return new Stmt.Expression(value);
     }
 

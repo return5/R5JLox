@@ -13,7 +13,7 @@ import java.util.function.BinaryOperator;
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private static final Interpreter interpreter = new Interpreter();
-    private final Enviroment enviroment = new Enviroment();
+    private Enviroment enviroment = new Enviroment();
 
     private Interpreter() {
         super();
@@ -31,13 +31,18 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Object visitVariableExpr(Expr.Variable<?> expr) {
+    public Void visitBlockStmt(final Stmt.Block stmt) {
+        executeBlock(stmt.getStatements(),new Enviroment(enviroment));
+        return null;
+    }
+    @Override
+    public Object visitVariableExpr(final Expr.Variable<?> expr) {
         return enviroment.get(expr.getName());
     }
 
     @Override
-    public Object visitAssignExpr(Expr.Assign<?> expr) {
-        final Object value = evalute(expr.getValue());
+    public Object visitAssignExpr(final Expr.Assign<?> expr) {
+        final Object value = evaluate(expr.getValue());
         enviroment.assign(expr.getName(),value);
         return value;
     }
@@ -107,6 +112,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                 return !isTruthy(right);
             default:
                 return null;
+        }
+    }
+
+    private void executeBlock(final List<Stmt> statements,final Enviroment enviroment) {
+        final Enviroment previous = this.enviroment;
+        try {
+            this.enviroment = enviroment;
+            statements.forEach(this::execute);
+        }finally {
+            this.enviroment = previous;
         }
     }
 
