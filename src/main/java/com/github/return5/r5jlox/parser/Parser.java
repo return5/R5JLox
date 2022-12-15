@@ -22,7 +22,7 @@ public class Parser{
         this.tokens = tokens;
     }
 
-    private Expr expression() { return equality(); }
+    private Expr expression() { return assignment(); }
 
     private Expr equality() {
         return leftAssociate(this::comparison,BANG_EQUAL,EQUAL_EQUAL);
@@ -38,6 +38,20 @@ public class Parser{
 
     private Expr factor() {
         return leftAssociate(this::unary,STAR,SLASH);
+    }
+
+    private Expr assignment() {
+        final Expr expr = equality();
+        if(match(EQUAL)) {
+            final Token<?> equal = previous();
+            final Expr value = assignment();
+            if(expr instanceof final Expr.Variable<?> val ) {
+                final Token<?> name = val.getName();
+                return new Expr.Assign<>(name,value);
+            }
+            errorHandler.error(equal, "Invalid assignment target.");
+        }
+        return expr;
     }
 
 

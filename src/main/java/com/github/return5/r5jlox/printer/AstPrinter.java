@@ -4,6 +4,7 @@ import main.java.com.github.return5.r5jlox.tree.Expr;
 
 import java.util.Arrays;
 
+// incomplete. //
 public class AstPrinter implements Expr.Visitor<String>{
 
     @Override
@@ -27,6 +28,16 @@ public class AstPrinter implements Expr.Visitor<String>{
     @Override
     public String visitUnaryExpr(Expr.Unary<?> expr) {
         return parenthesize(expr.getOperator().getLexeme(),expr.getRight());
+    }
+
+    @Override
+    public String visitVariableExpr(final Expr.Variable<?> expr) {
+        return null;
+    }
+
+    @Override
+    public String visitAssignExpr(Expr.Assign<?> expr) {
+        return null;
     }
 
     public String parenthesize(final String name,final Expr...exprs) {

@@ -16,7 +16,7 @@ public class Tool {
         final String outputDirectory = args[0];
         defineAst(outputDirectory, "Expr",List.of("Binary<T> : final Expr left, final Token<T> operator, final Expr right",
                 "Grouping : final Expr expression","Literal<T> : final T value","Unary<T> : final Token<T> operator, final Expr right",
-                "Variable<T> : final Token<T> name"));
+                "Variable<T> : final Token<T> name","Assign<T> : final Token<T> name, final Expr value"));
 
         defineAst(outputDirectory,"Stmt",List.of("Expression : final Expr expression",
                 "Say : final Expr expression","Stash<T> : final Token<T> name, final Expr initializer"));

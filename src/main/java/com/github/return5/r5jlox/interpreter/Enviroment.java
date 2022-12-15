@@ -19,4 +19,13 @@ public class Enviroment {
         }
         throw new R5JloxRuntimeError(name,"Undefined variable '" + name.getLexeme() + "'.");
     }
+
+    <T> void assign(final Token<T> name, final Object value) {
+        if(values.containsKey(name.getLexeme())) {
+            values.put(name.getLexeme(), value);
+        }
+        else {
+            throw new R5JloxRuntimeError(name,"Undefined variable '" + name.getLexeme() + "'.");
+        }
+    }
 }
