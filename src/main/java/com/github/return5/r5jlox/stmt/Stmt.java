@@ -13,6 +13,8 @@ public abstract class Stmt{
 		R visitStashStmt(Stash<?> stmt);
 		R visitIfStmt(If stmt);
 		R visitBlockStmt(Block stmt);
+		R visitWhileStmt(While stmt);
+
 	}
 
 	public abstract<R> R accept(final Visitor<R> visitor);
@@ -117,5 +119,29 @@ public abstract class Stmt{
 			return visitor.visitBlockStmt(this);
 		}
 	}
+
+	public static class While extends Stmt {
+
+		final Expr condition;
+		final Stmt body;
+
+		public While(final Expr condition, final Stmt body) {
+			this.condition = condition;
+			this.body = body;
+		}
+
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitWhileStmt(this);
+		}
+
+		public Expr getCondition() {
+			return condition;
+		}
+
+		public Stmt getBody() {
+			return body;
+		}
+	}
+
 
 }

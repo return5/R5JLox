@@ -25,6 +25,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitWhileStmt(final Stmt.While stmt) {
+        while(isTruthy(evaluate(stmt.getCondition()))) {
+            execute(stmt.getBody());
+        }
+        return null;
+    }
+
+    @Override
     public Object visitLogicalExpr(final Expr.Logical<?> expr) {
         final Object left = evaluate(expr.getLeft());
         if((expr.getOperator().getType() == TokenType.OR && isTruthy(left)) ||

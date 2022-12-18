@@ -21,7 +21,8 @@ public class Tool {
 
         defineAst(outputDirectory,"Stmt",List.of("Expression : final Expr expression",
                 "If : final Expr condition, final Stmt thenBranch, final Stmt elseBranch",
-                "Say : final Expr expression","Stash<T> : final Token<T> name, final Expr initializer", "Block :final List<Stmt> statements"));
+                "Say : final Expr expression","Stash<T> : final Token<T> name, final Expr initializer",
+                "Block :final List<Stmt> statements","While : final Expr condition, final Stmt body"));
     }
 
     private static void defineType(final PrintWriter writer,final String baseName, final String className, final String fieldList) {
