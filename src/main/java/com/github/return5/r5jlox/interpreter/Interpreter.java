@@ -95,17 +95,38 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         final Object left = evaluate(expr.getLeft());
         final Object right = evaluate(expr.getRight());
         return switch (expr.getOperator().getType()) {
-            case MINUS -> binaryExprNumberOperation(expr.getOperator(), left, right, this::subtract);
-            case SLASH -> binaryExprNumberOperation(expr.getOperator(), left, right, this::divide);
-            case STAR -> binaryExprNumberOperation(expr.getOperator(), left, right, this::multiply);
-            case PLUS -> binaryExprNumberOperation(expr.getOperator(), left, right, this::add);
-            case GREATER -> binaryExprNumberOperation(expr.getOperator(), left, right, (l, r) -> (double) l > (double) r);
-            case GREATER_EQUAL -> binaryExprNumberOperation(expr.getOperator(), left, right, (l, r) -> (double) l >= (double) r);
-            case LESS -> binaryExprNumberOperation(expr.getOperator(), left, right, (l, r) -> (double) l < (double) r);
-            case LESS_EQUAL -> binaryExprNumberOperation(expr.getOperator(), left, right, (l, r) -> (double) l <= (double) r);
+            case MINUS, STAR, SLASH, PLUS, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL -> binaryExprNumberOperation(expr.getOperator(), left, right);
             case BANG_EQUAL -> !isEqual(left, right);
             case BANG -> isEqual(left, right);
             case CONCAT -> binaryExprStringOperation(expr.getOperator(), left, right, (l, r) -> stringify(l) + stringify(r));
+            default -> null;
+        };
+    }
+
+    private <T> Object integerMathSwitch(final Token<T> expr, final int left, final int right) {
+        return switch (expr.getType()) {
+            case MINUS -> left - right;
+            case SLASH -> left / right;
+            case STAR -> left * right;
+            case PLUS -> left + right;
+            case GREATER -> left > right;
+            case GREATER_EQUAL -> left >= right;
+            case LESS -> left < right;
+            case LESS_EQUAL -> left <= right;
+            default -> null;
+        };
+    }
+
+    private <T> Object doubleMathSwitch(final Token<T> expr, final double left, final double right) {
+        return switch (expr.getType()) {
+            case MINUS -> left - right;
+            case SLASH -> left / right;
+            case STAR -> left * right;
+            case PLUS -> left + right;
+            case GREATER -> left > right;
+            case GREATER_EQUAL -> left >= right;
+            case LESS -> left < right;
+            case LESS_EQUAL -> left <= right;
             default -> null;
         };
     }
@@ -116,9 +137,20 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
 
-    private <T> Object binaryExprNumberOperation(final Token<T> token, final Object left, final Object right, final BinaryOperator<Object> func) {
-        checkNumberOperands(token, left, right);
-        return func.apply(left, right);
+    private <T> Object binaryExprNumberOperation(final Token<T> token, final Object left, final Object right) {
+        if(left instanceof final Integer l && right instanceof final Integer r) {
+            return integerMathSwitch(token,l,r);
+        }
+        if(left instanceof final Integer l && right instanceof final Double r) {
+            return doubleMathSwitch(token,l.doubleValue(),r);
+        }
+        if(left instanceof final Double l && right instanceof final Integer r) {
+            return doubleMathSwitch(token,l,r.doubleValue());
+        }
+        if(left instanceof final Double l && right instanceof final Double r) {
+            return doubleMathSwitch(token,l,r);
+        }
+        throw new R5JloxRuntimeError(token, "Operands must be numbers.");
     }
 
     @Override
@@ -136,12 +168,23 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         final Object right = evaluate(expr.getRight());
         switch (expr.getOperator().getType()) {
             case MINUS:
-                checkNumberOperand(expr.getOperator(), right);
-                return -(double) right;
+                return negativeNumber(expr.getOperator(),right);
             case BANG:
                 return !isTruthy(right);
             default:
                 return null;
+        }
+    }
+
+    private Object negativeNumber(final Token<?> operator,final Object right) {
+        if(right instanceof final Double d) {
+            return -d;
+        }
+        else if(right instanceof final Integer i){
+            return -i;
+        }
+        else {
+            throw new R5JloxRuntimeError(operator, "Operand must be a number.");
         }
     }
 
@@ -180,13 +223,6 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         throw new R5JloxRuntimeError(operator, "Operand must be a number.");
     }
 
-    private <T> void checkNumberOperands(final Token<T> operator, final Object left, final Object right) {
-        if ((left instanceof Double || left instanceof Integer) && (right instanceof Integer || right instanceof Double)) {
-            return;
-        }
-        throw new R5JloxRuntimeError(operator, "Operands must be numbers.");
-    }
-
 //    private <T> void checkStringOperands(final Token<T> operator, final Object left, final Object right) {
 //        if(left instanceof String || right instanceof String) {
 //            return;
@@ -216,58 +252,6 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             return "nil";
         }
         return obj.toString();
-    }
-
-    private Object subtract(final Object left, final Object right) {
-        if(left instanceof final Integer l && right instanceof final Integer r) {
-            return l - r;
-        }
-        if(left instanceof final Integer l) {
-            return l.doubleValue() - (double) right;
-        }
-        if(right instanceof final Integer r) {
-            return (double)left - r.doubleValue();
-        }
-        return (double) left - (double)right;
-    }
-
-    private Object add(final Object left, final Object right) {
-        if(left instanceof final Integer l && right instanceof final Integer r) {
-            return l + r;
-        }
-        if(left instanceof final Integer l) {
-            return l.doubleValue() + (double) right;
-        }
-        if(right instanceof final Integer r) {
-            return (double)left + r.doubleValue();
-        }
-        return (double) left + (double)right;
-    }
-
-    private Object multiply(final Object left, final Object right) {
-        if(left instanceof final Integer l && right instanceof final Integer r) {
-            return l * r;
-        }
-        if(left instanceof final Integer l) {
-            return l.doubleValue() * (double) right;
-        }
-        if(right instanceof final Integer r) {
-            return (double)left * r.doubleValue();
-        }
-        return (double) left * (double)right;
-    }
-
-    private Object divide(final Object left, final Object right) {
-        if(left instanceof final Integer l && right instanceof final Integer r) {
-            return l / r;
-        }
-        if(left instanceof final Integer l) {
-            return l.doubleValue() / (double) right;
-        }
-        if(right instanceof final Integer r) {
-            return (double)left / r.doubleValue();
-        }
-        return (double) left / (double)right;
     }
 }
 
