@@ -16,11 +16,12 @@ public class Tool {
         final String outputDirectory = args[0];
         defineAst(outputDirectory, "Expr",List.of("Binary<T> : final Expr left, final Token<T> operator, final Expr right",
                 "Grouping : final Expr expression","Literal<T> : final T value","Unary<T> : final Token<T> operator, final Expr right",
-                "Variable<T> : final Token<T> name","Assign<T> : final Token<T> name, final Expr value"));
+                "Variable<T> : final Token<T> name","Assign<T> : final Token<T> name, final Expr value",
+                "Logical<T> : final Expr left, final Token<T> operator, final Expr right"));
 
         defineAst(outputDirectory,"Stmt",List.of("Expression : final Expr expression",
+                "If : final Expr condition, final Stmt thenBranch, final Stmt elseBranch",
                 "Say : final Expr expression","Stash<T> : final Token<T> name, final Expr initializer", "Block :final List<Stmt> statements"));
-
     }
 
     private static void defineType(final PrintWriter writer,final String baseName, final String className, final String fieldList) {
@@ -32,7 +33,7 @@ public class Tool {
         writer.println();
         //generate Constructor
         writer.println("\t\tpublic " + stripClassName + "(" + fieldList + ") {" );
-        //inside fo constructor, initialize parameters.
+        //inside oo constructor, initialize parameters.
         Arrays.stream(fields).map(s -> s.split("final [\\w<>]+ ")[1]).forEach(f -> writer.println("\t\t\tthis." + f + " = " + f + ";"));
         writer.println("\t\t}");
         writer.println();

@@ -4,6 +4,7 @@ import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.errors.R5JloxRuntimeError;
 import main.java.com.github.return5.r5jlox.stmt.Stmt;
 import main.java.com.github.return5.r5jlox.token.Token;
+import main.java.com.github.return5.r5jlox.token.TokenType;
 import main.java.com.github.return5.r5jlox.tree.Expr;
 
 import java.util.List;
@@ -24,9 +25,30 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Object visitLogicalExpr(final Expr.Logical<?> expr) {
+        final Object left = evaluate(expr.getLeft());
+        if((expr.getOperator().getType() == TokenType.OR && isTruthy(left)) ||
+                (expr.getOperator().getType() == TokenType.AND && !isTruthy(left))) {
+            return left;
+        }
+        return evaluate(expr.getRight());
+    }
+
+    @Override
     public Void visitStashStmt(final Stmt.Stash<?> stmt) {
         final Object value = (stmt.getInitializer() != null)? evaluate(stmt.getInitializer()) : null;
         enviroment.define(stmt.getName().getLexeme(),value);
+        return null;
+    }
+
+    @Override
+    public Void visitIfStmt(final Stmt.If stmt) {
+        if(isTruthy(evaluate(stmt.getCondition()))) {
+            execute(stmt.getThenBranch());
+        }
+        else if(stmt.getElseBranch() != null) {
+            execute(stmt.getElseBranch());
+        }
         return null;
     }
 

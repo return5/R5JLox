@@ -41,7 +41,7 @@ public class Parser{
     }
 
     private Expr assignment() {
-        final Expr expr = equality();
+        final Expr expr = or();
         if(match(EQUAL)) {
             final Token<?> equal = previous();
             final Expr value = assignment();
@@ -54,7 +54,6 @@ public class Parser{
         return expr;
     }
 
-
     public List<Stmt> parse() {
         final List<Stmt> statements = new LinkedList<>();
         while(!isAtEnd()) {
@@ -63,7 +62,29 @@ public class Parser{
         return statements;
     }
 
+    private Expr or() {
+        return logical(this::and,this::previous,Expr.Logical::new,OR);
+    }
+
+    private Expr and() {
+        return logical(this::equality,this::previous,Expr.Logical::new,AND);
+    }
+
+    private Expr logical(final Supplier<Expr> supplier, final Supplier<Token<?>> opFunc,
+                         final ConstructorFunc<Expr.Logical<?>, Expr,Token<?>,Expr> constructor,final TokenType match) {
+        Expr expr = supplier.get();
+        while(match(match)) {
+            final Token<?> operator = opFunc.get();
+            final Expr right = supplier.get();
+            expr = constructor.construct(expr,operator,right);
+        }
+        return expr;
+    }
+
     private Stmt statement() {
+        if(match(IF)) {
+           return ifStatement();
+        }
         if(match(SAY)) {
             return sayStatement();
         }
@@ -71,6 +92,15 @@ public class Parser{
             return new Stmt.Block(block());
         }
         return expressionStatement();
+    }
+
+    private Stmt ifStatement() {
+        consume(LEFT_PAREN,"Expect '(' after 'if'.");
+        final Expr condition = expression();
+        consume(RIGHT_PAREN,"Expect ')' after if condition.");
+        final Stmt thenBranch = statement();
+        final Stmt elseBranch = (match(ELSE))? statement() : null;
+        return new Stmt.If(condition,thenBranch,elseBranch);
     }
 
     private List<Stmt> block() {

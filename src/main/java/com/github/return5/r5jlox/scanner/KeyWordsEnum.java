@@ -17,6 +17,7 @@ public enum KeyWordsEnum {
 	SELF("self",TokenType.SELF),
 	TRUE("true",TokenType.TRUE),
 	STASH("stash",TokenType.STASH),
+    OR("or",TokenType.OR),
 	WHILE("while",TokenType.WHILE);
 
     private final String keyWord;
