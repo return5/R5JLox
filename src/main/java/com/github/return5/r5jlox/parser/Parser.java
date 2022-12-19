@@ -10,6 +10,7 @@ import main.java.com.github.return5.r5jlox.tree.Expr;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
 
 import static main.java.com.github.return5.r5jlox.token.TokenType.*;
 
@@ -82,6 +83,9 @@ public class Parser{
     }
 
     private Stmt statement() {
+        if(match(FOR)) {
+            return forStatement();
+        }
         if(match(IF)) {
            return ifStatement();
         }
@@ -93,6 +97,32 @@ public class Parser{
         }
         if(match(LEFT_BRACE)) {
             return new Stmt.Block(block());
+        }
+        return expressionStatement();
+    }
+
+    private Stmt forStatement() {
+        consume(LEFT_PAREN, "Expect '(' after 'for'.");
+        final Stmt initializer = forInitializer();
+        final Expr condition = (!check(SEMICOLON)) ? expression() : new Expr.Literal<>(true);
+        consume(SEMICOLON, "Expect ';' after loop condition.");
+        final Expr increment = (!check(RIGHT_PAREN)) ? expression() : null;
+        consume(RIGHT_PAREN, "Expect ')' after for clause.");
+        return  makeForLoopBody(initializer,condition,increment);
+    }
+
+    private Stmt makeForLoopBody(final Stmt initializer,final Expr condition,final Expr increment) {
+        final Stmt body = new Stmt.While((condition == null)? new Expr.Literal<>(true) : condition,
+                (increment == null) ? statement() : new Stmt.Block(List.of(statement(), new Stmt.Expression(increment))));
+        return (initializer != null) ? new Stmt.Block(List.of(initializer,body)) : body;
+    }
+
+    private Stmt forInitializer() {
+        if(match(SEMICOLON)) {
+            return null;
+        }
+        if(match(STASH)) {
+            return varDeclaration();
         }
         return expressionStatement();
     }

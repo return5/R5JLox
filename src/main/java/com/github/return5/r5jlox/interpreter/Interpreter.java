@@ -166,14 +166,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitUnaryExpr(final Expr.Unary<?> expr) {
         final Object right = evaluate(expr.getRight());
-        switch (expr.getOperator().getType()) {
-            case MINUS:
-                return negativeNumber(expr.getOperator(),right);
-            case BANG:
-                return !isTruthy(right);
-            default:
-                return null;
-        }
+       return switch (expr.getOperator().getType()) {
+            case MINUS -> negativeNumber(expr.getOperator(),right);
+            case BANG -> !isTruthy(right);
+            default -> null;
+        };
     }
 
     private Object negativeNumber(final Token<?> operator,final Object right) {
