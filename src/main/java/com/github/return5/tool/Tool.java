@@ -21,6 +21,7 @@ public class Tool {
 
         defineAst(outputDirectory,"Stmt",List.of("Expression : final Expr expression",
                 "Function<T> : final Token<T> name, final List<Token<?>> params, final List<Stmt> body",
+                "Return<T> : final Token<T> keyword, final Expr value",
                 "If : final Expr condition, final Stmt thenBranch, final Stmt elseBranch",
                 "Say : final Expr expression","Stash<T> : final Token<T> name, final Expr initializer",
                 "Block :final List<Stmt> statements","While : final Expr condition, final Stmt body"));

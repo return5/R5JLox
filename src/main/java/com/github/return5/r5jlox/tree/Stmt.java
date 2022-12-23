@@ -14,6 +14,7 @@ public abstract class Stmt{
 		R visitBlockStmt(Block stmt);
 		R visitWhileStmt(While stmt);
 		R visitFunctionStmt(Function<?> stmt);
+		R visitReturnStmt(Return<?> stmt);
 	}
 
 	public abstract<R> R accept(final Visitor<R> visitor);
@@ -168,6 +169,30 @@ public abstract class Stmt{
 
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitFunctionStmt(this);
+		}
+	}
+
+
+	public static class Return<T> extends Stmt {
+
+		final Token<T> keyword;
+		final Expr value;
+
+		public Return(final Token<T> keyword, final Expr value) {
+			this.keyword = keyword;
+			this.value = value;
+		}
+
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitReturnStmt(this);
+		}
+
+		public Token<T> getKeyword() {
+			return keyword;
+		}
+
+		public Expr getValue() {
+			return value;
 		}
 	}
 

@@ -5,6 +5,7 @@ import main.java.com.github.return5.r5jlox.callable.R5JLoxCallable;
 import main.java.com.github.return5.r5jlox.callable.R5JLoxFunction;
 import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.errors.R5JloxRuntimeError;
+import main.java.com.github.return5.r5jlox.errors.Return;
 import main.java.com.github.return5.r5jlox.tree.Stmt;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.token.TokenType;
@@ -45,6 +46,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         final R5JLoxFunction<?> func = new R5JLoxFunction<>(stmt);
         environment.define(stmt.getName().getLexeme(),func);
         return null;
+    }
+
+    @Override
+    public Void visitReturnStmt(final Stmt.Return<?> stmt) {
+        final Object value = (stmt.getValue() != null) ? evaluate(stmt.getValue()) : null;
+        throw new Return(value);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package main.java.com.github.return5.r5jlox.callable;
 
+import main.java.com.github.return5.r5jlox.errors.Return;
 import main.java.com.github.return5.r5jlox.interpreter.Environment;
 import main.java.com.github.return5.r5jlox.interpreter.Interpreter;
 import main.java.com.github.return5.r5jlox.tree.Stmt;
@@ -20,7 +21,11 @@ public class R5JLoxFunction<T> implements R5JLoxCallable {
         final Environment environment = new Environment(interpreter.getGlobal()) ;
         IntStream.range(0,declaration.getParams().size())
                 .forEach(i -> environment.define(declaration.getParams().get(i).getLexeme(),arguments.get(i)));
-        interpreter.executeBlock(declaration.getBody(),environment);
+        try {
+            interpreter.executeBlock(declaration.getBody(), environment);
+        }catch(final Return r) {
+            return r.getValue();
+        }
         return null;
     }
 
