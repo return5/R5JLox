@@ -43,7 +43,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitFunctionStmt(final Stmt.Function<?> stmt) {
-        final R5JLoxFunction<?> func = new R5JLoxFunction<>(stmt);
+        final R5JLoxFunction<?> func = new R5JLoxFunction<>(stmt,environment);
         environment.define(stmt.getName().getLexeme(),func);
         return null;
     }

@@ -11,14 +11,16 @@ import java.util.stream.IntStream;
 public class R5JLoxFunction<T> implements R5JLoxCallable {
 
     private final Stmt.Function<T> declaration;
+    private final Environment closure;
 
-    public R5JLoxFunction(final Stmt.Function<T> declaration) {
+    public R5JLoxFunction(final Stmt.Function<T> declaration,final Environment closure) {
         this.declaration = declaration;
+        this.closure = closure;
     }
 
     @Override
     public Object call(final Interpreter interpreter,final List<Object> arguments) {
-        final Environment environment = new Environment(interpreter.getGlobal()) ;
+        final Environment environment = new Environment(closure) ;
         IntStream.range(0,declaration.getParams().size())
                 .forEach(i -> environment.define(declaration.getParams().get(i).getLexeme(),arguments.get(i)));
         try {
@@ -34,13 +36,8 @@ public class R5JLoxFunction<T> implements R5JLoxCallable {
         return declaration.getParams().size();
     }
 
-    public Stmt.Function<T> getDeclaration() {
-        return declaration;
-    }
-
     @Override
     public String toString() {
         return "<fn " + declaration.getName().getLexeme() + " >";
     }
-
 }
