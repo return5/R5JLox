@@ -59,7 +59,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitCallExpr(final Expr.Call<?> expr) {
-        final Object callee = evaluate(expr);
+        final Object callee = evaluate(expr.getCallee());
         final List<Object> arguments = expr.getArguments().stream()
                 .map(this::evaluate)
                 .toList();
@@ -259,7 +259,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 //    }
 
     private Object evaluate(final Expr expr) {
-        return expr.accept(this);
+        return expr.accept(interpreter);
     }
 
     public void interpret(final List<Stmt> statements) {
@@ -272,7 +272,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     private void execute(final Stmt stmt) {
-        stmt.accept(this);
+        stmt.accept(interpreter);
     }
 
     private String stringify(final Object obj) {
