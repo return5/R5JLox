@@ -21,7 +21,7 @@ public class ErrorHandler {
         hadError = true;
     }
 
-    private <T> void reportError(final Token<T> token, final String message) {
+    public <T> void reportError(final Token<T> token, final String message) {
         if(token.getType() == TokenType.EOF) {
             report(token.getLine()," at end",message);
         }
@@ -30,7 +30,7 @@ public class ErrorHandler {
         }
     }
 
-    public <T> ParseError error(final Token<T> token, final String message) {
+    public <T> ParseError throwableError(final Token<T> token, final String message) {
         reportError(token,message);
         return new ParseError();
     }

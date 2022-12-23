@@ -4,7 +4,7 @@ import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.interpreter.Interpreter;
 import main.java.com.github.return5.r5jlox.parser.Parser;
 import main.java.com.github.return5.r5jlox.scanner.Scanner;
-import main.java.com.github.return5.r5jlox.stmt.Stmt;
+import main.java.com.github.return5.r5jlox.tree.Stmt;
 import main.java.com.github.return5.r5jlox.token.Token;
 
 import java.io.BufferedReader;

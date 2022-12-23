@@ -1,8 +1,11 @@
 package main.java.com.github.return5.r5jlox.interpreter;
 
+import main.java.com.github.return5.r5jlox.callable.FFEnum;
+import main.java.com.github.return5.r5jlox.callable.R5JLoxCallable;
+import main.java.com.github.return5.r5jlox.callable.R5JLoxFunction;
 import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.errors.R5JloxRuntimeError;
-import main.java.com.github.return5.r5jlox.stmt.Stmt;
+import main.java.com.github.return5.r5jlox.tree.Stmt;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.token.TokenType;
 import main.java.com.github.return5.r5jlox.tree.Expr;
@@ -14,7 +17,8 @@ import java.util.function.BinaryOperator;
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private static final Interpreter interpreter = new Interpreter();
-    private Enviroment enviroment = new Enviroment();
+    private final Environment global = new Environment(FFEnum.values());
+    private Environment environment = global;
 
     private Interpreter() {
         super();
@@ -24,11 +28,22 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return interpreter;
     }
 
+    public Environment getGlobal() {
+        return global;
+    }
+
     @Override
     public Void visitWhileStmt(final Stmt.While stmt) {
         while(isTruthy(evaluate(stmt.getCondition()))) {
             execute(stmt.getBody());
         }
+        return null;
+    }
+
+    @Override
+    public Void visitFunctionStmt(final Stmt.Function<?> stmt) {
+        final R5JLoxFunction<?> func = new R5JLoxFunction<>(stmt);
+        environment.define(stmt.getName().getLexeme(),func);
         return null;
     }
 
@@ -43,9 +58,25 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Object visitCallExpr(final Expr.Call<?> expr) {
+        final Object callee = evaluate(expr);
+        final List<Object> arguments = expr.getArguments().stream()
+                .map(this::evaluate)
+                .toList();
+        if(callee instanceof final R5JLoxCallable func) {
+            if(expr.getArguments().size() != func.arity()) {
+                throw new R5JloxRuntimeError(expr.getParen(),"Expected " + func.arity() + "arguments, but got " + arguments.size() +".");
+            }
+            return func.call(interpreter,arguments);
+
+        }
+        throw new R5JloxRuntimeError(expr.getParen(),"can only call classes and functions.");
+    }
+
+    @Override
     public Void visitStashStmt(final Stmt.Stash<?> stmt) {
         final Object value = (stmt.getInitializer() != null)? evaluate(stmt.getInitializer()) : null;
-        enviroment.define(stmt.getName().getLexeme(),value);
+        environment.define(stmt.getName().getLexeme(),value);
         return null;
     }
 
@@ -62,24 +93,24 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitBlockStmt(final Stmt.Block stmt) {
-        executeBlock(stmt.getStatements(),new Enviroment(enviroment));
+        executeBlock(stmt.getStatements(),new Environment(environment));
         return null;
     }
     @Override
     public Object visitVariableExpr(final Expr.Variable<?> expr) {
-        return enviroment.get(expr.getName());
+        return environment.get(expr.getName());
     }
 
     @Override
     public Object visitAssignExpr(final Expr.Assign<?> expr) {
         final Object value = evaluate(expr.getValue());
-        enviroment.assign(expr.getName(),value);
+        environment.assign(expr.getName(),value);
         return value;
     }
 
     @Override
     public Void visitExpressionStmt(final Stmt.Expression stmt) {
-        evaluate(stmt.getExpression());
+        evaluate(stmt.getExpr());
         return null;
     }
 
@@ -98,12 +129,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             case MINUS, STAR, SLASH, PLUS, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL -> binaryExprNumberOperation(expr.getOperator(), left, right);
             case BANG_EQUAL -> !isEqual(left, right);
             case BANG -> isEqual(left, right);
-            case CONCAT -> binaryExprStringOperation(expr.getOperator(), left, right, (l, r) -> stringify(l) + stringify(r));
+            case CONCAT -> binaryExprStringOperation(left, right, (l, r) -> stringify(l) + stringify(r));
             default -> null;
         };
     }
 
-    private <T> Object integerMathSwitch(final Token<T> expr, final int left, final int right) {
+    private <T> Object mathSwitch(final Token<T> expr, final int left, final int right) {
         return switch (expr.getType()) {
             case MINUS -> left - right;
             case SLASH -> left / right;
@@ -117,7 +148,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         };
     }
 
-    private <T> Object doubleMathSwitch(final Token<T> expr, final double left, final double right) {
+    private <T> Object mathSwitch(final Token<T> expr, final double left, final double right) {
         return switch (expr.getType()) {
             case MINUS -> left - right;
             case SLASH -> left / right;
@@ -131,24 +162,24 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         };
     }
 
-    private <T> Object binaryExprStringOperation(final Token<T> token, final Object left, final Object right, final BinaryOperator<Object> func) {
+    private Object binaryExprStringOperation(final Object left, final Object right, final BinaryOperator<Object> func) {
         //checkStringOperands(token,left,right);
         return func.apply(left, right);
     }
 
-
     private <T> Object binaryExprNumberOperation(final Token<T> token, final Object left, final Object right) {
+
         if(left instanceof final Integer l && right instanceof final Integer r) {
-            return integerMathSwitch(token,l,r);
+            return mathSwitch(token,l,r);
         }
         if(left instanceof final Integer l && right instanceof final Double r) {
-            return doubleMathSwitch(token,l.doubleValue(),r);
+            return mathSwitch(token,l.doubleValue(),r);
         }
         if(left instanceof final Double l && right instanceof final Integer r) {
-            return doubleMathSwitch(token,l,r.doubleValue());
+            return mathSwitch(token,l,r.doubleValue());
         }
         if(left instanceof final Double l && right instanceof final Double r) {
-            return doubleMathSwitch(token,l,r);
+            return mathSwitch(token,l,r);
         }
         throw new R5JloxRuntimeError(token, "Operands must be numbers.");
     }
@@ -185,13 +216,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
     }
 
-    private void executeBlock(final List<Stmt> statements,final Enviroment enviroment) {
-        final Enviroment previous = this.enviroment;
+    public void executeBlock(final List<Stmt> statements, final Environment environment) {
+        final Environment previous = this.environment;
         try {
-            this.enviroment = enviroment;
+            this.environment = environment;
             statements.forEach(this::execute);
         }finally {
-            this.enviroment = previous;
+            this.environment = previous;
         }
     }
 

@@ -2,6 +2,8 @@ package main.java.com.github.return5.r5jlox.tree;
 
 import main.java.com.github.return5.r5jlox.token.Token;
 
+import java.util.List;
+
 public abstract class Expr{
 
 	public interface Visitor<R> {
@@ -12,6 +14,8 @@ public abstract class Expr{
 		R visitVariableExpr(Variable<?> expr);
 		R visitAssignExpr(Assign<?> expr);
 		R visitLogicalExpr(Logical<?> expr);
+		R visitCallExpr(Call<?> expr);
+
 	}
 
 	public abstract<R> R accept(final Visitor<R> visitor);
@@ -167,4 +171,34 @@ public abstract class Expr{
 			return visitor.visitAssignExpr(this);
 		}
 	}
+
+	public static class Call<T> extends Expr {
+
+		final Expr callee;
+		final Token<T> paren;
+		final List<Expr> arguments;
+
+		public Call(final Expr callee, final Token<T> paren, final List<Expr> arguments) {
+			this.callee = callee;
+			this.paren = paren;
+			this.arguments = arguments;
+		}
+
+		public Expr getCallee() {
+			return callee;
+		}
+
+		public Token<T> getParen() {
+			return paren;
+		}
+
+		public List<Expr> getArguments() {
+			return arguments;
+		}
+
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitCallExpr(this);
+		}
+	}
+
 }

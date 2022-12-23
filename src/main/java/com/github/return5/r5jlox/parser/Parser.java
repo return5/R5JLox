@@ -2,7 +2,7 @@ package main.java.com.github.return5.r5jlox.parser;
 
 import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.errors.ParseError;
-import main.java.com.github.return5.r5jlox.stmt.Stmt;
+import main.java.com.github.return5.r5jlox.tree.Stmt;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.token.TokenType;
 import main.java.com.github.return5.r5jlox.tree.Expr;
@@ -10,7 +10,6 @@ import main.java.com.github.return5.r5jlox.tree.Expr;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
 
 import static main.java.com.github.return5.r5jlox.token.TokenType.*;
 
@@ -50,7 +49,7 @@ public class Parser{
                 final Token<?> name = val.getName();
                 return new Expr.Assign<>(name,value);
             }
-            errorHandler.error(equal, "Invalid assignment target.");
+            errorHandler.reportError(equal, "Invalid assignment target.");
         }
         return expr;
     }
@@ -155,6 +154,9 @@ public class Parser{
 
     private Stmt declaration() {
         try {
+            if(match(FUNCTI)) {
+                return function("function");
+            }
             if(match(STASH)) {
                 return varDeclaration();
             }
@@ -163,6 +165,24 @@ public class Parser{
             synchronize();
             return null;
         }
+    }
+
+    private Stmt.Function<?> function(final String kind) {
+        final Token<?> name = consume(IDENTIFIER,"Expect " + kind + " name.");
+        consume(LEFT_PAREN,"Expect '(' after " + kind + " name.");
+        final List<Token<?>> parameters = new LinkedList<>();
+        if(!check(RIGHT_PAREN)) {
+            do {
+                parameters.add(consume(IDENTIFIER, "Expect parameter name."));
+            }while(match(COMMA));
+            if(parameters.size() >= 255) {
+                errorHandler.reportError(peek(),"can't have more than 255 parameters.");
+            }
+        }
+        consume(RIGHT_PAREN,"Expect ')' after parameters.");
+        consume(LEFT_BRACE,"Expect '{' before " + kind + " body.");
+        final List<Stmt> body = block();
+        return new Stmt.Function<>(name,parameters,body);
     }
 
     private Stmt varDeclaration() {
@@ -190,7 +210,34 @@ public class Parser{
             final Expr right = unary();
             return new Expr.Unary<>(operator,right);
         }
-        return primary();
+        return call();
+    }
+
+    private Expr call() {
+        Expr expr = primary();
+        while(true) {
+            if(match(LEFT_PAREN)) {
+                expr = finishCall(expr);
+            }
+            else {
+                break;
+            }
+        }
+        return expr;
+    }
+
+    private Expr finishCall(final Expr callee) {
+        final List<Expr> arguments = new LinkedList<>();
+        if(!check(RIGHT_PAREN)) {
+            do {
+                arguments.add(expression());
+            }while(match(COMMA));
+        }
+        if(arguments.size() >= 255) {
+            errorHandler.reportError(peek(),"can't have more than 255 arguments.");
+        }
+        final Token<?> paren = consume(RIGHT_PAREN,"Expect a  ')' after arguments.");
+        return new Expr.Call<>(callee,paren,arguments);
     }
 
     private Expr primary() {
@@ -214,7 +261,7 @@ public class Parser{
             consume(RIGHT_PAREN,"Expect ')' after expression");
             return new Expr.Grouping(expr);
         }
-        throw errorHandler.error(peek(),"Expect Expression.");
+        throw errorHandler.throwableError(peek(),"Expect Expression.");
     }
 
     private Expr leftAssociate(final Supplier<Expr> func,final TokenType...types) {
@@ -271,7 +318,7 @@ public class Parser{
         if(check(type)) {
             return advance();
         }
-        throw errorHandler.error(peek(),message);
+        throw errorHandler.throwableError(peek(),message);
     }
 
     private boolean isAtEnd() {

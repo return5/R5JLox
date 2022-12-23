@@ -1,26 +1,28 @@
 package main.java.com.github.return5.r5jlox.interpreter;
 
+import main.java.com.github.return5.r5jlox.callable.FFEnum;
 import main.java.com.github.return5.r5jlox.errors.R5JloxRuntimeError;
 import main.java.com.github.return5.r5jlox.token.Token;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Enviroment {
+public class Environment {
 
-    private final Enviroment enclosing;
+    private final Environment enclosing;
     private final Map<String,Object> values = new HashMap<>();
 
-
-    public Enviroment() {
-        this.enclosing = null;
-    }
-
-    public Enviroment(final Enviroment enclosing) {
+    public Environment(final Environment enclosing) {
         this.enclosing = enclosing;
     }
 
-    void define(final String name, final Object value) {
+    public Environment(final FFEnum[] values) {
+        Arrays.stream(values).forEach(e -> this.define(e.getName(),e.getFunc()));
+        this.enclosing = null;
+    }
+
+   public void define(final String name, final Object value) {
         values.put(name,value);
     }
 
@@ -34,7 +36,7 @@ public class Enviroment {
         throw new R5JloxRuntimeError(name,"Undefined variable '" + name.getLexeme() + "'.");
     }
 
-    <T> void assign(final Token<T> name, final Object value) {
+    public <T> void assign(final Token<T> name, final Object value) {
         if(values.containsKey(name.getLexeme())) {
             values.put(name.getLexeme(), value);
         }
@@ -46,7 +48,7 @@ public class Enviroment {
         }
     }
 
-    public Enviroment getEnclosing() {
+    public Environment getEnclosing() {
         return enclosing;
     }
 

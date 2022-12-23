@@ -1,7 +1,6 @@
-package main.java.com.github.return5.r5jlox.stmt;
+package main.java.com.github.return5.r5jlox.tree;
 
 import main.java.com.github.return5.r5jlox.token.Token;
-import main.java.com.github.return5.r5jlox.tree.Expr;
 
 import java.util.List;
 
@@ -14,25 +13,25 @@ public abstract class Stmt{
 		R visitIfStmt(If stmt);
 		R visitBlockStmt(Block stmt);
 		R visitWhileStmt(While stmt);
-
+		R visitFunctionStmt(Function<?> stmt);
 	}
 
 	public abstract<R> R accept(final Visitor<R> visitor);
 
 	public static class Expression extends Stmt {
 
-		final Expr expression;
+		final Expr expr;
 
-		public Expression(final Expr expression) {
-			this.expression = expression;
+		public Expression(final Expr expr) {
+			this.expr = expr;
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitExpressionStmt(this);
 		}
 
-		public Expr getExpression() {
-			return expression;
+		public Expr getExpr() {
+			return expr;
 		}
 	}
 
@@ -143,5 +142,33 @@ public abstract class Stmt{
 		}
 	}
 
+	public static class Function<T> extends Stmt {
+
+		final Token<T> name;
+		final List<Token<?>> params;
+		final List<Stmt> body;
+
+		public Function(final Token<T> name, final List<Token<?>> params, final List<Stmt> body) {
+			this.name = name;
+			this.params = params;
+			this.body = body;
+		}
+
+		public Token<T> getName() {
+			return name;
+		}
+
+		public List<Token<?>> getParams() {
+			return params;
+		}
+
+		public List<Stmt> getBody() {
+			return body;
+		}
+
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitFunctionStmt(this);
+		}
+	}
 
 }
