@@ -17,10 +17,12 @@ public class Tool {
         defineAst(outputDirectory, "Expr",List.of("Binary<T> : final Expr left, final Token<T> operator, final Expr right",
                 "Grouping : final Expr expression","Literal<T> : final T value","Unary<T> : final Token<T> operator, final Expr right",
                 "Variable<T> : final Token<T> name","Assign<T> : final Token<T> name, final Expr value",
-                "Logical<T> : final Expr left, final Token<T> operator, final Expr right","Call<T> : final Expr callee, final Token<T> paren, final List<Expr> arguments"));
+                "Logical<T> : final Expr left, final Token<T> operator, final Expr right",
+                "Call<T> : final Expr callee, final Token<T> paren, final List<Expr> arguments",
+                "Function : final List<Token<?>> parameters, final List<Stmt> body"));
 
         defineAst(outputDirectory,"Stmt",List.of("Expression : final Expr expression",
-                "Function<T> : final Token<T> name, final List<Token<?>> params, final List<Stmt> body",
+                "Function<T> : final Token<T> name, final Expr.Function function",
                 "Return<T> : final Token<T> keyword, final Expr value",
                 "If : final Expr condition, final Stmt thenBranch, final Stmt elseBranch",
                 "Say : final Expr expression","Stash<T> : final Token<T> name, final Expr initializer",
@@ -37,7 +39,7 @@ public class Tool {
         //generate Constructor
         writer.println("\t\tpublic " + stripClassName + "(" + fieldList + ") {" );
         //inside of constructor, initialize parameters.
-        Arrays.stream(fields).map(s -> s.split("final [\\w<>?]+ ")[1]).forEach(f -> writer.println("\t\t\tthis." + f + " = " + f + ";"));
+        Arrays.stream(fields).map(s -> s.split("final [\\w<>?.]+ ")[1]).forEach(f -> writer.println("\t\t\tthis." + f + " = " + f + ";"));
         writer.println("\t\t}");
         writer.println();
         writer.println("\t\tpublic <R> R accept(final Visitor<R> visitor) {");

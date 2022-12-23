@@ -13,7 +13,7 @@ public abstract class Stmt{
 		R visitIfStmt(If stmt);
 		R visitBlockStmt(Block stmt);
 		R visitWhileStmt(While stmt);
-		R visitFunctionStmt(Function<?> stmt);
+		R visitFunctionStmt(Stmt.Function<?> stmt);
 		R visitReturnStmt(Return<?> stmt);
 	}
 
@@ -146,32 +146,25 @@ public abstract class Stmt{
 	public static class Function<T> extends Stmt {
 
 		final Token<T> name;
-		final List<Token<?>> params;
-		final List<Stmt> body;
+		final Expr.Function function;
 
-		public Function(final Token<T> name, final List<Token<?>> params, final List<Stmt> body) {
+		public Function(final Token<T> name, final Expr.Function function) {
 			this.name = name;
-			this.params = params;
-			this.body = body;
+			this.function = function;
+		}
+
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitFunctionStmt(this);
 		}
 
 		public Token<T> getName() {
 			return name;
 		}
 
-		public List<Token<?>> getParams() {
-			return params;
-		}
-
-		public List<Stmt> getBody() {
-			return body;
-		}
-
-		public <R> R accept(final Visitor<R> visitor) {
-			return visitor.visitFunctionStmt(this);
+		public Expr.Function getFunction() {
+			return function;
 		}
 	}
-
 
 	public static class Return<T> extends Stmt {
 

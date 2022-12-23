@@ -15,7 +15,7 @@ public abstract class Expr{
 		R visitAssignExpr(Assign<?> expr);
 		R visitLogicalExpr(Logical<?> expr);
 		R visitCallExpr(Call<?> expr);
-
+		R visitFunctionExpr(Function expr);
 	}
 
 	public abstract<R> R accept(final Visitor<R> visitor);
@@ -201,4 +201,26 @@ public abstract class Expr{
 		}
 	}
 
+	public static class Function extends Expr {
+
+		final List<Token<?>> parameters;
+		final List<Stmt> body;
+
+		public Function(final List<Token<?>> parameters, final List<Stmt> body) {
+			this.parameters = parameters;
+			this.body = body;
+		}
+
+		public List<Token<?>> getParameters() {
+			return parameters;
+		}
+
+		public List<Stmt> getBody() {
+			return body;
+		}
+
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitFunctionExpr(this);
+		}
+	}
 }

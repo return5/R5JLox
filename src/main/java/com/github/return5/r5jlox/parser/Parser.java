@@ -164,7 +164,8 @@ public class Parser{
 
     private Stmt declaration() {
         try {
-            if(match(FUNCTI)) {
+            if(check(FUNCTI) && checkNext(IDENTIFIER)) {
+                consume(FUNCTI,null);
                 return function("function");
             }
             if(match(STASH)) {
@@ -177,8 +178,8 @@ public class Parser{
         }
     }
 
-    private Stmt.Function<?> function(final String kind) {
-        final Token<?> name = consume(IDENTIFIER,"Expect " + kind + " name.");
+
+    private Expr.Function functionBody(final String kind) {
         consume(LEFT_PAREN,"Expect '(' after " + kind + " name.");
         final List<Token<?>> parameters = new LinkedList<>();
         if(!check(RIGHT_PAREN)) {
@@ -191,8 +192,12 @@ public class Parser{
         }
         consume(RIGHT_PAREN,"Expect ')' after parameters.");
         consume(LEFT_BRACE,"Expect '{' before " + kind + " body.");
-        final List<Stmt> body = block();
-        return new Stmt.Function<>(name,parameters,body);
+        return new Expr.Function(parameters,block());
+    }
+
+    private Stmt.Function<?> function(final String kind) {
+        final Token<?> name = consume(IDENTIFIER,"Expect " + kind + " name.");
+        return new Stmt.Function<>(name,functionBody(kind));
     }
 
     private Stmt varDeclaration() {
@@ -271,6 +276,9 @@ public class Parser{
             consume(RIGHT_PAREN,"Expect ')' after expression");
             return new Expr.Grouping(expr);
         }
+        if(match(FUNCTI)) {
+            return functionBody("function");
+        }
         throw errorHandler.throwableError(peek(),"Expect Expression.");
     }
 
@@ -343,5 +351,11 @@ public class Parser{
         return tokens.get(current - 1);
     }
 
+    private boolean checkNext(final TokenType type) {
+        if(isAtEnd() || tokens.get(current + 1).getType() == EOF) {
+            return false;
+        }
+        return tokens.get(current + 1).getType() == type;
+    }
 
 }

@@ -41,10 +41,10 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
-    @Override
     public Void visitFunctionStmt(final Stmt.Function<?> stmt) {
-        final R5JLoxFunction<?> func = new R5JLoxFunction<>(stmt,environment);
-        environment.define(stmt.getName().getLexeme(),func);
+        final String fnName = stmt.getName().getLexeme();
+        final R5JLoxFunction func = new R5JLoxFunction(fnName,stmt.getFunction(),environment);
+        environment.define(fnName,func);
         return null;
     }
 
@@ -78,6 +78,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
         }
         throw new R5JloxRuntimeError(expr.getParen(),"can only call classes and functions.");
+    }
+
+    @Override
+    public Object visitFunctionExpr(Expr.Function expr) {
+        return new R5JLoxFunction(null,expr,environment);
     }
 
     @Override
