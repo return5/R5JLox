@@ -11,7 +11,9 @@ import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.token.TokenType;
 import main.java.com.github.return5.r5jlox.tree.Expr;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BinaryOperator;
 
 
@@ -20,6 +22,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     private static final Interpreter interpreter = new Interpreter();
     private final Environment global = new Environment(FFEnum.values());
     private Environment environment = global;
+    private final Map<Expr,Integer> locals = new HashMap<>();
+
 
     private Interpreter() {
         super();
@@ -110,13 +114,19 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
     @Override
     public Object visitVariableExpr(final Expr.Variable<?> expr) {
-        return environment.get(expr.getName());
+        return lookUpVariable(expr.getName(),expr);
     }
 
     @Override
     public Object visitAssignExpr(final Expr.Assign<?> expr) {
         final Object value = evaluate(expr.getValue());
-        environment.assign(expr.getName(),value);
+        final Integer dist = locals.get(expr);
+        if(dist != null) {
+            environment.assignAt(dist,expr.getName(),value);
+        }
+        else {
+            global.assign(expr.getName(),value);
+        }
         return value;
     }
 
@@ -293,5 +303,21 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
         return obj.toString();
     }
+
+    public void resolve(final Expr expr,final int depth) {
+        locals.put(expr,depth);
+    }
+
+    private <T,U> Object lookUpVariable(final Token<T> name,final Expr.Variable<U> expr) {
+        final Integer dist = locals.get(expr);
+        if(dist != null) {
+            return environment.getAt(dist,name.getLexeme());
+        }
+        else {
+            return global.get(name);
+        }
+    }
+
+
 }
 

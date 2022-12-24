@@ -2,6 +2,7 @@ package main.java.com.github.return5.r5jlox;
 
 import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.interpreter.Interpreter;
+import main.java.com.github.return5.r5jlox.resolver.Resolver;
 import main.java.com.github.return5.r5jlox.parser.Parser;
 import main.java.com.github.return5.r5jlox.scanner.Scanner;
 import main.java.com.github.return5.r5jlox.tree.Stmt;
@@ -68,7 +69,11 @@ public class R5JLox {
         if(errorHandler.isHadError()) {
             return;
         }
+        Resolver.getResolver().resolve(statements);
         //System.out.println(new AstPrinter().print(expr));
+        if(errorHandler.isHadError()) {
+            return;
+        }
         interpreter.interpret(statements);
     }
 

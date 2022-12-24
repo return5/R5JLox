@@ -52,4 +52,19 @@ public class Environment {
         return enclosing;
     }
 
+    private Environment ancestor(final Integer dist) {
+        Environment environment = this;
+        for(int i = 0; i < dist; i++) {
+            environment = environment.getEnclosing();
+        }
+        return  environment;
+    }
+
+    public Object getAt(final Integer dist,final String name) {
+        return ancestor(dist).values.get(name);
+    }
+
+    public <T> void assignAt(final Integer dist,final Token<T> name,final Object value) {
+        ancestor(dist).values.put(name.getLexeme(),value);
+    }
 }
