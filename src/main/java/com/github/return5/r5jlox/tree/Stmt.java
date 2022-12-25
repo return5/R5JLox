@@ -15,6 +15,7 @@ public abstract class Stmt{
 		R visitWhileStmt(While stmt);
 		R visitFunctionStmt(Stmt.Function<?> stmt);
 		R visitReturnStmt(Return<?> stmt);
+		R visitDesignationStmt(Designation<?> stmt);
 	}
 
 	public abstract<R> R accept(final Visitor<R> visitor);
@@ -186,6 +187,29 @@ public abstract class Stmt{
 
 		public Expr getValue() {
 			return value;
+		}
+	}
+
+	public static class Designation<T> extends Stmt {
+
+		final Token<T> name;
+		final List<Stmt.Function<?>> methods;
+
+		public Designation(final Token<T> name, final List<Stmt.Function<?>> methods) {
+			this.name = name;
+			this.methods = methods;
+		}
+
+		public List<Function<?>> getMethods() {
+			return methods;
+		}
+
+		public Token<T> getName() {
+			return name;
+		}
+
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitDesignationStmt(this);
 		}
 	}
 

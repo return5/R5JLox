@@ -222,4 +222,11 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
         }
         return null;
     }
+
+    @Override
+    public Void visitDesignationStmt(Stmt.Designation<?> stmt) {
+        declare(stmt.getName());
+        define(stmt.getName());
+        return null;
+    }
 }

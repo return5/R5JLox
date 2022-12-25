@@ -164,6 +164,9 @@ public class Parser{
 
     private Stmt declaration() {
         try {
+            if(match(DESIGNATION)) {
+                return designationDeclaration();
+            }
             if(check(FUNCTI) && checkNext(IDENTIFIER)) {
                 consume(FUNCTI,null);
                 return function("function");
@@ -178,6 +181,16 @@ public class Parser{
         }
     }
 
+    private Stmt designationDeclaration() {
+        final Token<?> name = consume(IDENTIFIER,"Expect designation name.");
+        consume(LEFT_BRACE,"expect '{' before designation body.");
+        final List<Stmt.Function<?>> methods = new LinkedList<>();
+        while(!check(RIGHT_BRACE) && !isAtEnd()) {
+            methods.add(function("method"));
+        }
+        consume(RIGHT_BRACE,"Expect } after designation body.");
+        return new Stmt.Designation<>(name,methods);
+    }
 
     private Expr.Function functionBody(final String kind) {
         consume(LEFT_PAREN,"Expect '(' after " + kind + " name.");

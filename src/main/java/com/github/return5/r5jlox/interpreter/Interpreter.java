@@ -59,6 +59,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitDesignationStmt(Stmt.Designation<?> stmt) {
+        environment.define(stmt.getName().getLexeme(),null);
+        final R5JLoxClass clazz = new R5JLoxClass(stmt.getName().getLexeme());
+        environment.assign(stmt.getName(),clazz);
+        return null;
+    }
+
+    @Override
     public Object visitLogicalExpr(final Expr.Logical<?> expr) {
         final Object left = evaluate(expr.getLeft());
         if((expr.getOperator().getType() == TokenType.OR && isTruthy(left)) ||

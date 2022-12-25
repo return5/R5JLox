@@ -15,8 +15,11 @@ public class Tool {
         }
         final String outputDirectory = args[0];
         defineAst(outputDirectory, "Expr",List.of("Binary<T> : final Expr left, final Token<T> operator, final Expr right",
-                "Grouping : final Expr expression","Literal<T> : final T value","Unary<T> : final Token<T> operator, final Expr right",
-                "Variable<T> : final Token<T> name","Assign<T> : final Token<T> name, final Expr value",
+                "Grouping : final Expr expression",
+                "Literal<T> : final T value",
+                "Unary<T> : final Token<T> operator, final Expr right",
+                "Variable<T> : final Token<T> name",
+                "Assign<T> : final Token<T> name, final Expr value",
                 "Logical<T> : final Expr left, final Token<T> operator, final Expr right",
                 "Call<T> : final Expr callee, final Token<T> paren, final List<Expr> arguments",
                 "Function : final List<Token<?>> parameters, final List<Stmt> body"));
@@ -25,8 +28,11 @@ public class Tool {
                 "Function<T> : final Token<T> name, final Expr.Function function",
                 "Return<T> : final Token<T> keyword, final Expr value",
                 "If : final Expr condition, final Stmt thenBranch, final Stmt elseBranch",
-                "Say : final Expr expression","Stash<T> : final Token<T> name, final Expr initializer",
-                "Block :final List<Stmt> statements","While : final Expr condition, final Stmt body"));
+                "Say : final Expr expression",
+                "Stash<T> : final Token<T> name, final Expr initializer",
+                "Designation<T> : final Token<T> name, final List<Stmt.Function<?>> methods",
+                "Block :final List<Stmt> statements",
+                "While : final Expr condition, final Stmt body"));
     }
 
     private static void defineType(final PrintWriter writer,final String baseName, final String className, final String fieldList) {
