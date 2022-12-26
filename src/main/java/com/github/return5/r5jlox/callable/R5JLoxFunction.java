@@ -4,6 +4,7 @@ import main.java.com.github.return5.r5jlox.errors.Return;
 import main.java.com.github.return5.r5jlox.interpreter.Environment;
 import main.java.com.github.return5.r5jlox.interpreter.Interpreter;
 import main.java.com.github.return5.r5jlox.tree.Expr;
+import main.java.com.github.return5.r5jlox.tree.Stmt;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -17,7 +18,13 @@ public class R5JLoxFunction implements R5JLoxCallable {
     public R5JLoxFunction(final String name, final Expr.Function declaration, final Environment closure) {
         this.declaration = declaration;
         this.closure = closure;
-        this.name = name;;
+        this.name = name;
+    }
+
+    public <T> R5JLoxFunction(final Stmt.Function<T> e, final Environment environment) {
+        this.closure = environment;
+        this.declaration = e.getFunction();
+        this.name = e.getName().getLexeme();
     }
 
     @Override

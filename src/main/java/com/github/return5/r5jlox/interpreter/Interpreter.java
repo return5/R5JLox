@@ -6,6 +6,8 @@ import main.java.com.github.return5.r5jlox.callable.R5JLoxFunction;
 import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
 import main.java.com.github.return5.r5jlox.errors.R5JloxRuntimeError;
 import main.java.com.github.return5.r5jlox.errors.Return;
+import main.java.com.github.return5.r5jlox.interpreter.classes.R5JLoxClass;
+import main.java.com.github.return5.r5jlox.interpreter.classes.R5JLoxInstance;
 import main.java.com.github.return5.r5jlox.tree.Stmt;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.token.TokenType;
@@ -59,9 +61,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Void visitDesignationStmt(Stmt.Designation<?> stmt) {
+    public Void visitDesignationStmt(final Stmt.Designation<?> stmt) {
         environment.define(stmt.getName().getLexeme(),null);
-        final R5JLoxClass clazz = new R5JLoxClass(stmt.getName().getLexeme());
+        environment.assign(stmt.getName(),new R5JLoxClass(stmt.getName().getLexeme()));
+        final Map<String,R5JLoxFunction> methods = new HashMap<>();
+        stmt.getMethods().forEach(e -> methods.put(e.getName().getLexeme(),new R5JLoxFunction(e,environment)));
+        final R5JLoxClass clazz = new R5JLoxClass(stmt.getName().getLexeme(),methods);
         environment.assign(stmt.getName(),clazz);
         return null;
     }
@@ -93,8 +98,30 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Object visitFunctionExpr(Expr.Function expr) {
+    public Object visitFunctionExpr(final Expr.Function expr) {
         return new R5JLoxFunction(null,expr,environment);
+    }
+
+    @Override
+    public Object visitGetExpr(final Expr.Get<?> expr) {
+        final Object object = evaluate(expr.getObject());
+        if(object instanceof final R5JLoxInstance instance) {
+            return instance.get(expr.getName());
+        }
+        throw new R5JloxRuntimeError(expr.getName(),"Only instances have properties.");
+    }
+
+    @Override
+    public Object visitSetExpr(final Expr.Set<?> expr) {
+        final Object object = evaluate(expr.getObject());
+        if(object instanceof final R5JLoxInstance instance) {
+            final Object value = evaluate(expr.getValue());
+            instance.setField(expr.getName(),value);
+            return value;
+        }
+        else {
+            throw new R5JloxRuntimeError(expr.getName(),"Only instances have fields.");
+        }
     }
 
     @Override

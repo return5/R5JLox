@@ -18,10 +18,12 @@ public class Tool {
                 "Grouping : final Expr expression",
                 "Literal<T> : final T value",
                 "Unary<T> : final Token<T> operator, final Expr right",
+                "Set<T> : final Expr object, final Token<T> name, final Expr value",
                 "Variable<T> : final Token<T> name",
                 "Assign<T> : final Token<T> name, final Expr value",
                 "Logical<T> : final Expr left, final Token<T> operator, final Expr right",
                 "Call<T> : final Expr callee, final Token<T> paren, final List<Expr> arguments",
+                "Get<T> : final Expr object, final Token<T> name",
                 "Function : final List<Token<?>> parameters, final List<Stmt> body"));
 
         defineAst(outputDirectory,"Stmt",List.of("Expression : final Expr expression",
@@ -35,23 +37,41 @@ public class Tool {
                 "While : final Expr condition, final Stmt body"));
     }
 
+
+    private static void writeGetters(final PrintWriter writer,final String[] fields, final String fieldOffset,final String methodOffset) {
+        writer.println();
+        //write getters.
+        for(final String field : fields) {
+            final String[] splitFields = field.split(" ");
+            final String type = splitFields[1];
+            final String name = splitFields[2];
+            writer.println(methodOffset + "public " + type + " get" + Character.toUpperCase(name.charAt(0)) + name.substring(1) + "() {");
+            writer.println(fieldOffset + "return " + name + ";");
+            writer.println("\t\t}");
+            writer.println();
+        }
+    }
+
     private static void defineType(final PrintWriter writer,final String baseName, final String className, final String fieldList) {
+        final String methodOffset = "\t\t";
+        final String fieldOffset = "\t\t\t";
         writer.println("\tpublic static class " + className + " extends " + baseName + " {");
         final String stripClassName = className.split("<")[0].trim();
         writer.println();
         final String[] fields = fieldList.split(", ");
-        Arrays.stream(fields).forEach(f -> writer.println("\t\t" + f + ";"));
+        Arrays.stream(fields).forEach(f -> writer.println(methodOffset + f + ";"));
         writer.println();
         //generate Constructor
         writer.println("\t\tpublic " + stripClassName + "(" + fieldList + ") {" );
         //inside of constructor, initialize parameters.
-        Arrays.stream(fields).map(s -> s.split("final [\\w<>?.]+ ")[1]).forEach(f -> writer.println("\t\t\tthis." + f + " = " + f + ";"));
-        writer.println("\t\t}");
-        writer.println();
-        writer.println("\t\tpublic <R> R accept(final Visitor<R> visitor) {");
-        writer.println("\t\t\treturn visitor.visit" + stripClassName + baseName + "(this);");
-        writer.println("\t\t}");
+        Arrays.stream(fields).map(s -> s.split("final [\\w<>?.]+ ")[1]).forEach(f -> writer.println(fieldOffset + "this." + f + " = " + f + ";"));
+        writer.println(methodOffset + "}");
+        writeGetters(writer,fields,fieldOffset,methodOffset);
+        writer.println(methodOffset + "public <R> R accept(final Visitor<R> visitor) {");
+        writer.println(fieldOffset + "return visitor.visit" + stripClassName + baseName + "(this);");
+        writer.println(methodOffset + "}");
         writer.println("\t}");
+        writer.println();
     }
 
     private static void defineAst(final String outputDirectory,final String baseName,final List<String> types) throws IOException {

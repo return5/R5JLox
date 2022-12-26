@@ -49,6 +49,9 @@ public class Parser{
                 final Token<?> name = val.getName();
                 return new Expr.Assign<>(name,value);
             }
+            else if(expr instanceof final Expr.Get<?> get) {
+                return new Expr.Set<>(get.getObject(),get.getName(),value);
+            }
             errorHandler.reportError(equal, "Invalid assignment target.");
         }
         return expr;
@@ -246,6 +249,10 @@ public class Parser{
         while(true) {
             if(match(LEFT_PAREN)) {
                 expr = finishCall(expr);
+            }
+            else if(match(DOT)) {
+                final Token<?> name = consume(IDENTIFIER,"Expect property name after identifier.");
+                expr = new Expr.Get<>(expr,name);
             }
             else {
                 break;

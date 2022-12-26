@@ -16,6 +16,8 @@ public abstract class Expr{
 		R visitLogicalExpr(Logical<?> expr);
 		R visitCallExpr(Call<?> expr);
 		R visitFunctionExpr(Function expr);
+		R visitGetExpr(Get<?> expr);
+		R visitSetExpr(Set<?> expr);
 	}
 
 	public abstract<R> R accept(final Visitor<R> visitor);
@@ -100,6 +102,33 @@ public abstract class Expr{
 
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitUnaryExpr(this);
+		}
+	}
+
+	public static class Set<T> extends Expr {
+
+		final Expr object;
+		final Token<T> name;
+		final Expr value;
+
+		public Set(final Expr object, final Token<T> name, final Expr value) {
+			this.object = object;
+			this.name = name;
+			this.value = value;
+		}
+
+		public Expr getObject() {
+			return object;
+		}
+		public Token<T> getName() {
+			return name;
+		}
+		public Expr getValue() {
+			return value;
+		}
+
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitSetExpr(this);
 		}
 	}
 
@@ -223,4 +252,28 @@ public abstract class Expr{
 			return visitor.visitFunctionExpr(this);
 		}
 	}
+
+	public static class Get<T> extends Expr {
+
+		final Expr object;
+		final Token<T> name;
+
+		public Get(final Expr object, final Token<T> name) {
+			this.object = object;
+			this.name = name;
+		}
+
+		public Expr getObject() {
+			return object;
+		}
+
+		public Token<T> getName() {
+			return name;
+		}
+
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitGetExpr(this);
+		}
+	}
+
 }

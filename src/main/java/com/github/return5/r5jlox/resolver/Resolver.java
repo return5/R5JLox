@@ -158,6 +158,19 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
     }
 
     @Override
+    public Void visitGetExpr(Expr.Get<?> expr) {
+        resolve(expr.getObject());
+        return null;
+    }
+
+    @Override
+    public Void visitSetExpr(Expr.Set<?> expr) {
+        resolve(expr.getValue());
+        resolve(expr.getObject());
+        return null;
+    }
+
+    @Override
     public Void visitExpressionStmt(final Stmt.Expression stmt) {
         resolve(stmt.getExpr());
         return null;
@@ -227,6 +240,10 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
     public Void visitDesignationStmt(Stmt.Designation<?> stmt) {
         declare(stmt.getName());
         define(stmt.getName());
+        for(final Stmt.Function<?> method : stmt.getMethods()) {
+            final FunctionType declaration = FunctionType.METHOD;
+            resolveFunction(method,declaration);
+        }
         return null;
     }
 }

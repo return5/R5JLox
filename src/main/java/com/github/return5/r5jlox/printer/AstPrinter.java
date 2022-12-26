@@ -32,11 +32,13 @@ public class AstPrinter implements Expr.Visitor<String>{
 
     @Override
     public String visitVariableExpr(final Expr.Variable<?> expr) {
+        //TODO fill this in.
         return null;
     }
 
     @Override
     public String visitAssignExpr(Expr.Assign<?> expr) {
+        //TODO fill this in.
         return null;
     }
 
@@ -48,11 +50,24 @@ public class AstPrinter implements Expr.Visitor<String>{
 
     @Override
     public String visitCallExpr(Expr.Call<?> expr) {
+        //TODO fill this in.
         return null;
     }
 
     @Override
     public String visitFunctionExpr(Expr.Function expr) {
+        //TODO fill this in.
+        return null;
+    }
+
+    @Override
+    public String visitGetExpr(Expr.Get<?> expr) {
+        //TODO fill this in.
+        return null;
+    }
+
+    @Override
+    public String visitSetExpr(Expr.Set<?> expr) {
         return null;
     }
 
@@ -68,6 +83,7 @@ public class AstPrinter implements Expr.Visitor<String>{
     public String print(final Expr expr) {
         return expr.accept(this);
     }
+    //TODO fill this in.
 
 //    public static void main(final String[] args) {
 //        final Expr expression = new Expr.Binary<>(
