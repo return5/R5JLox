@@ -1,5 +1,6 @@
 package main.java.com.github.return5.r5jlox.resolver;
 import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
+import main.java.com.github.return5.r5jlox.errors.R5JloxRuntimeError;
 import main.java.com.github.return5.r5jlox.interpreter.Interpreter;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.tree.Expr;
@@ -17,6 +18,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
     private final ErrorHandler errorHandler = ErrorHandler.getParseErrorHandler();
 
     private FunctionType currentFunction = FunctionType.NONE;
+
+    private ClassType classType = ClassType.NONE;
 
     //linkedList will be used as a stack.
     private final Deque<Map<String,Boolean>> scopes = new LinkedList<>();
@@ -171,6 +174,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
 
     @Override
     public Void visitSelfExpr(Expr.Self<?> expr) {
+        if(classType == ClassType.NONE) {
+            errorHandler.reportError(expr.getKeyword(),"Can't use 'self' outside of a designation.");
+        }
         resolveLocal(expr,expr.getKeyword());
         return null;
     }
@@ -243,6 +249,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
 
     @Override
     public Void visitDesignationStmt(Stmt.Designation<?> stmt) {
+        final ClassType enclosingClass = this.classType;
+        this.classType = ClassType.CLASS;
         declare(stmt.getName());
         define(stmt.getName());
         beginScope();
@@ -252,6 +260,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
             resolveFunction(method,declaration);
         }
         endScope();
+        this.classType = enclosingClass;
         return null;
     }
 }
