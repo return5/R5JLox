@@ -125,6 +125,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Object visitSelfExpr(final Expr.Self<?> expr) {
+        return lookUpVariable(expr.getKeyword(),expr);
+    }
+
+    @Override
     public Void visitStashStmt(final Stmt.Stash<?> stmt) {
         final Object value = (stmt.getInitializer() != null)? evaluate(stmt.getInitializer()) : null;
         environment.define(stmt.getName().getLexeme(),value);
@@ -343,7 +348,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         locals.put(expr,depth);
     }
 
-    private <T,U> Object lookUpVariable(final Token<T> name,final Expr.Variable<U> expr) {
+    private <T> Object lookUpVariable(final Token<T> name,final Expr expr) {
         final Integer dist = locals.get(expr);
         if(dist != null) {
             return environment.getAt(dist,name.getLexeme());

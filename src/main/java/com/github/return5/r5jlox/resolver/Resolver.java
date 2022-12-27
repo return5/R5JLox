@@ -72,9 +72,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
 
     private void resolveLocal(final Expr expr,final Token<?> name) {
         int i = scopes.size() - 1;
-        final Iterator<Map<String,Boolean>> iter = scopes.descendingIterator();
-        while(iter.hasNext()) {
-            if(iter.next().containsKey(name.getLexeme())) {
+        for (final Map<String, Boolean> scope : scopes) {
+            if (scope.containsKey(name.getLexeme())) {
                 interpreter.resolve(expr, scopes.size() - 1 - i);
                 return;
             }
@@ -171,6 +170,12 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
     }
 
     @Override
+    public Void visitSelfExpr(Expr.Self<?> expr) {
+        resolveLocal(expr,expr.getKeyword());
+        return null;
+    }
+
+    @Override
     public Void visitExpressionStmt(final Stmt.Expression stmt) {
         resolve(stmt.getExpr());
         return null;
@@ -240,10 +245,13 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
     public Void visitDesignationStmt(Stmt.Designation<?> stmt) {
         declare(stmt.getName());
         define(stmt.getName());
+        beginScope();
+        scopes.peek().put("self",true);
         for(final Stmt.Function<?> method : stmt.getMethods()) {
             final FunctionType declaration = FunctionType.METHOD;
             resolveFunction(method,declaration);
         }
+        endScope();
         return null;
     }
 }

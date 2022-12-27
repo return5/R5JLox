@@ -3,6 +3,7 @@ package main.java.com.github.return5.r5jlox.tree;
 import main.java.com.github.return5.r5jlox.token.Token;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 public abstract class Stmt{
 
@@ -32,6 +33,13 @@ public abstract class Stmt{
 			return visitor.visitExpressionStmt(this);
 		}
 
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Expression.class.getSimpleName() + "[", "]")
+					.add("expr=" + expr)
+					.toString();
+		}
+
 		public Expr getExpr() {
 			return expr;
 		}
@@ -51,6 +59,15 @@ public abstract class Stmt{
 
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitIfStmt(this);
+		}
+
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", If.class.getSimpleName() + "[", "]")
+					.add("condition=" + condition)
+					.add("thenBranch=" + thenBranch)
+					.add("elseBranch=" + elseBranch)
+					.toString();
 		}
 
 		public Expr getCondition() {
@@ -78,6 +95,13 @@ public abstract class Stmt{
 			return expression;
 		}
 
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Say.class.getSimpleName() + "[", "]")
+					.add("expression=" + expression)
+					.toString();
+		}
+
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitSayStmt(this);
 		}
@@ -100,6 +124,14 @@ public abstract class Stmt{
 			this.initializer = initializer;
 		}
 
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Stash.class.getSimpleName() + "[", "]")
+					.add("name=" + name)
+					.add("initializer=" + initializer)
+					.toString();
+		}
+
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitStashStmt(this);
 		}
@@ -113,6 +145,13 @@ public abstract class Stmt{
 
 		public List<Stmt> getStatements() {
 			return this.statements;
+		}
+
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Block.class.getSimpleName() + "[", "]")
+					.add("statements=" + statements)
+					.toString();
 		}
 
 		@Override
@@ -139,6 +178,14 @@ public abstract class Stmt{
 			return condition;
 		}
 
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", While.class.getSimpleName() + "[", "]")
+					.add("condition=" + condition)
+					.add("body=" + body)
+					.toString();
+		}
+
 		public Stmt getBody() {
 			return body;
 		}
@@ -160,6 +207,14 @@ public abstract class Stmt{
 
 		public Token<T> getName() {
 			return name;
+		}
+
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Function.class.getSimpleName() + "[", "]")
+					.add("name=" + name)
+					.add("function=" + function)
+					.toString();
 		}
 
 		public Expr.Function getFunction() {
@@ -185,6 +240,14 @@ public abstract class Stmt{
 			return keyword;
 		}
 
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Return.class.getSimpleName() + "[", "]")
+					.add("keyword=" + keyword)
+					.add("value=" + value)
+					.toString();
+		}
+
 		public Expr getValue() {
 			return value;
 		}
@@ -206,6 +269,14 @@ public abstract class Stmt{
 
 		public Token<T> getName() {
 			return name;
+		}
+
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Designation.class.getSimpleName() + "[", "]")
+					.add("name=" + name)
+					.add("methods=" + methods)
+					.toString();
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {

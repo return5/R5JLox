@@ -276,6 +276,9 @@ public class Parser{
     }
 
     private Expr primary() {
+        if(match(SELF)) {
+            return new Expr.Self<>(previous());
+        }
         if(match(FALSE)) {
             return new Expr.Literal<>(false);
         }

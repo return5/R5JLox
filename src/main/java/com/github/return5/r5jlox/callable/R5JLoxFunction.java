@@ -3,6 +3,7 @@ package main.java.com.github.return5.r5jlox.callable;
 import main.java.com.github.return5.r5jlox.errors.Return;
 import main.java.com.github.return5.r5jlox.interpreter.Environment;
 import main.java.com.github.return5.r5jlox.interpreter.Interpreter;
+import main.java.com.github.return5.r5jlox.interpreter.classes.R5JLoxInstance;
 import main.java.com.github.return5.r5jlox.tree.Expr;
 import main.java.com.github.return5.r5jlox.tree.Stmt;
 
@@ -51,5 +52,11 @@ public class R5JLoxFunction implements R5JLoxCallable {
             return "<fn>";
         }
         return "<fn " + name + " >";
+    }
+
+    public R5JLoxFunction bind(final R5JLoxInstance r5JLoxInstance) {
+        final Environment environment = new Environment(closure);
+        environment.define("self",r5JLoxInstance);
+        return new R5JLoxFunction("self",declaration,environment);
     }
 }

@@ -3,6 +3,7 @@ package main.java.com.github.return5.r5jlox.tree;
 import main.java.com.github.return5.r5jlox.token.Token;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 public abstract class Expr{
 
@@ -18,6 +19,7 @@ public abstract class Expr{
 		R visitFunctionExpr(Function expr);
 		R visitGetExpr(Get<?> expr);
 		R visitSetExpr(Set<?> expr);
+		R visitSelfExpr(Self<?> expr);
 	}
 
 	public abstract<R> R accept(final Visitor<R> visitor);
@@ -46,6 +48,15 @@ public abstract class Expr{
 			return right;
 		}
 
+		@Override
+		public String toString() {
+			return "Binary{" +
+					"left=" + left +
+					", operator=" + operator +
+					", right=" + right +
+					'}';
+		}
+
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitBinaryExpr(this);
 		}
@@ -62,6 +73,13 @@ public abstract class Expr{
 			return expression;
 		}
 
+		@Override
+		public String toString() {
+			return "Grouping{" +
+					"expression=" + expression +
+					'}';
+		}
+
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitGroupingExpr(this);
 		}
@@ -76,6 +94,13 @@ public abstract class Expr{
 
 		public T getValue() {
 			return value;
+		}
+
+		@Override
+		public String toString() {
+			return "Literal{" +
+					"value=" + value +
+					'}';
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {
@@ -98,6 +123,14 @@ public abstract class Expr{
 
 		public Expr getRight() {
 			return right;
+		}
+
+		@Override
+		public String toString() {
+			return "Unary{" +
+					"operator=" + operator +
+					", right=" + right +
+					'}';
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {
@@ -125,6 +158,15 @@ public abstract class Expr{
 		}
 		public Expr getValue() {
 			return value;
+		}
+
+		@Override
+		public String toString() {
+			return "Set{" +
+					"object=" + object +
+					", name=" + name +
+					", value=" + value +
+					'}';
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {
@@ -156,6 +198,15 @@ public abstract class Expr{
 			return operator;
 		}
 
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Logical.class.getSimpleName() + "[", "]")
+					.add("left=" + left)
+					.add("operator=" + operator)
+					.add("right=" + right)
+					.toString();
+		}
+
 		public Expr getRight() {
 			return right;
 		}
@@ -171,6 +222,13 @@ public abstract class Expr{
 
 		public Variable(final Token<T> name) {
 			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Variable.class.getSimpleName() + "[", "]")
+					.add("name=" + name)
+					.toString();
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {
@@ -194,6 +252,14 @@ public abstract class Expr{
 
 		public Expr getValue() {
 			return value;
+		}
+
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Assign.class.getSimpleName() + "[", "]")
+					.add("name=" + name)
+					.add("value=" + value)
+					.toString();
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {
@@ -225,6 +291,15 @@ public abstract class Expr{
 			return arguments;
 		}
 
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Call.class.getSimpleName() + "[", "]")
+					.add("callee=" + callee)
+					.add("paren=" + paren)
+					.add("arguments=" + arguments)
+					.toString();
+		}
+
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitCallExpr(this);
 		}
@@ -246,6 +321,14 @@ public abstract class Expr{
 
 		public List<Stmt> getBody() {
 			return body;
+		}
+
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Function.class.getSimpleName() + "[", "]")
+					.add("parameters=" + parameters)
+					.add("body=" + body)
+					.toString();
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {
@@ -271,9 +354,42 @@ public abstract class Expr{
 			return name;
 		}
 
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Get.class.getSimpleName() + "[", "]")
+					.add("object=" + object)
+					.add("name=" + name)
+					.toString();
+		}
+
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitGetExpr(this);
 		}
 	}
+
+	public static class Self<T> extends Expr {
+
+		final Token<T> keyword;
+
+		public Self(final Token<T> keyword) {
+			this.keyword = keyword;
+		}
+
+		public Token<T> getKeyword() {
+			return keyword;
+		}
+
+		@Override
+		public String toString() {
+			return new StringJoiner(", ", Self.class.getSimpleName() + "[", "]")
+					.add("keyword=" + keyword)
+					.toString();
+		}
+
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitSelfExpr(this);
+		}
+	}
+
 
 }

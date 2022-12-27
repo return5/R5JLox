@@ -19,6 +19,7 @@ public class Tool {
                 "Literal<T> : final T value",
                 "Unary<T> : final Token<T> operator, final Expr right",
                 "Set<T> : final Expr object, final Token<T> name, final Expr value",
+                "Self<T> : final Token<T> keyowrd",
                 "Variable<T> : final Token<T> name",
                 "Assign<T> : final Token<T> name, final Expr value",
                 "Logical<T> : final Expr left, final Token<T> operator, final Expr right",

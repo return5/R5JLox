@@ -27,7 +27,7 @@ public class R5JLoxInstance {
         }
         final R5JLoxFunction func = clazz.findMethod(name.getLexeme());
         if(func != null) {
-            return func;
+            return func.bind(this);
         }
         throw new R5JloxRuntimeError(name,"Undefined property '" + name.getLexeme() + "'.");
     }
