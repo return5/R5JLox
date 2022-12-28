@@ -15,17 +15,20 @@ public class R5JLoxFunction implements R5JLoxCallable {
     private final Expr.Function declaration;
     private final Environment closure;
     private final String name;
+    private final boolean isInitializer;
 
-    public R5JLoxFunction(final String name, final Expr.Function declaration, final Environment closure) {
+    public R5JLoxFunction(final String name, final Expr.Function declaration, final Environment closure,final boolean isInitializer) {
         this.declaration = declaration;
         this.closure = closure;
         this.name = name;
+        this.isInitializer = isInitializer;
     }
 
-    public <T> R5JLoxFunction(final Stmt.Function<T> e, final Environment environment) {
+    public <T> R5JLoxFunction(final Stmt.Function<T> e, final Environment environment,final boolean isInitializer) {
         this.closure = environment;
         this.declaration = e.getFunction();
         this.name = e.getName().getLexeme();
+        this.isInitializer = isInitializer;
     }
 
     @Override
@@ -36,7 +39,13 @@ public class R5JLoxFunction implements R5JLoxCallable {
         try {
             interpreter.executeBlock(declaration.getBody(), environment);
         }catch(final Return r) {
+            if(isInitializer) {
+                return closure.getAt(0,"this");
+            }
             return r.getValue();
+        }
+        if(isInitializer) {
+            return closure.getAt(0,"this");
         }
         return null;
     }
@@ -57,6 +66,6 @@ public class R5JLoxFunction implements R5JLoxCallable {
     public R5JLoxFunction bind(final R5JLoxInstance r5JLoxInstance) {
         final Environment environment = new Environment(closure);
         environment.define("self",r5JLoxInstance);
-        return new R5JLoxFunction("self",declaration,environment);
+        return new R5JLoxFunction("self",declaration,environment,isInitializer);
     }
 }

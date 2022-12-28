@@ -49,7 +49,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     public Void visitFunctionStmt(final Stmt.Function<?> stmt) {
         final String fnName = stmt.getName().getLexeme();
-        final R5JLoxFunction func = new R5JLoxFunction(fnName,stmt.getFunction(),environment);
+        final R5JLoxFunction func = new R5JLoxFunction(fnName,stmt.getFunction(),environment,false);
         environment.define(fnName,func);
         return null;
     }
@@ -65,7 +65,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         environment.define(stmt.getName().getLexeme(),null);
         environment.assign(stmt.getName(),new R5JLoxClass(stmt.getName().getLexeme()));
         final Map<String,R5JLoxFunction> methods = new HashMap<>();
-        stmt.getMethods().forEach(e -> methods.put(e.getName().getLexeme(),new R5JLoxFunction(e,environment)));
+        stmt.getMethods().forEach(e -> methods.put(e.getName().getLexeme(),new R5JLoxFunction(e,environment,"init".equals(e.getName().getLexeme()))));
         final R5JLoxClass clazz = new R5JLoxClass(stmt.getName().getLexeme(),methods);
         environment.assign(stmt.getName(),clazz);
         return null;
@@ -99,7 +99,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitFunctionExpr(final Expr.Function expr) {
-        return new R5JLoxFunction(null,expr,environment);
+        return new R5JLoxFunction(null,expr,environment,false);
     }
 
     @Override

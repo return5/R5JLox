@@ -35,12 +35,21 @@ public class R5JLoxClass implements R5JLoxCallable {
 
     @Override
     public Object call(final Interpreter interpreter, final List<Object> arguments) {
-        return new R5JLoxInstance(this);
+        final R5JLoxInstance instance = new R5JLoxInstance(this);
+        final R5JLoxFunction init = findMethod("init");
+        if(init != null) {
+            init.bind(instance).call(interpreter,arguments);
+        }
+        return instance;
     }
 
     @Override
     public int arity() {
-        return 0;
+        final R5JLoxFunction instance = findMethod("init");
+        if(instance == null) {
+            return 0;
+        }
+        return instance.arity();
     }
 
     public R5JLoxFunction findMethod(final String name) {

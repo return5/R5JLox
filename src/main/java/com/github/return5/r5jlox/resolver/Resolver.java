@@ -242,6 +242,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
             errorHandler.reportError(stmt.getKeyword(), "Can't return from outside a function.");
         }
         if(stmt.getValue() != null) {
+            if(currentFunction == FunctionType.INIT) {
+                errorHandler.reportError(stmt.getKeyword(),"Can't return a value from an initializer.");
+            }
             resolve(stmt.getValue());
         }
         return null;
@@ -254,9 +257,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
         declare(stmt.getName());
         define(stmt.getName());
         beginScope();
-        scopes.peek().put("self",true);
+        Objects.requireNonNull(scopes.peek()).put("self",true);
         for(final Stmt.Function<?> method : stmt.getMethods()) {
-            final FunctionType declaration = FunctionType.METHOD;
+            final FunctionType declaration = ("init".equals(method.getName().getLexeme())) ? FunctionType.INIT : FunctionType.METHOD;
             resolveFunction(method,declaration);
         }
         endScope();
