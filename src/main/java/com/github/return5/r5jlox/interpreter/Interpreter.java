@@ -60,13 +60,30 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         throw new Return(value);
     }
 
+    private R5JLoxClass getSuperClass(final Stmt.Designation<?,?> stmt) {
+        if(stmt.getSuperClass() != null) {
+            final Object superClass = evaluate(stmt.getSuperClass());
+            if(superClass instanceof final R5JLoxClass clazz ) {
+                environment = new Environment(environment);
+                environment.define("super",clazz);
+                return clazz;
+            }
+             throw new R5JloxRuntimeError(stmt.getSuperClass().getName(), " Superclass must be a Class.");
+        }
+        return null;
+    }
+
     @Override
-    public Void visitDesignationStmt(final Stmt.Designation<?> stmt) {
+    public Void visitDesignationStmt(final Stmt.Designation<?,?> stmt) {
         environment.define(stmt.getName().getLexeme(),null);
+        final R5JLoxClass superClass = getSuperClass(stmt);
         environment.assign(stmt.getName(),new R5JLoxClass(stmt.getName().getLexeme()));
         final Map<String,R5JLoxFunction> methods = new HashMap<>();
         stmt.getMethods().forEach(e -> methods.put(e.getName().getLexeme(),new R5JLoxFunction(e,environment,"init".equals(e.getName().getLexeme()))));
-        final R5JLoxClass clazz = new R5JLoxClass(stmt.getName().getLexeme(),methods);
+        final R5JLoxClass clazz = new R5JLoxClass(stmt.getName().getLexeme(),superClass,methods);
+        if(superClass != null) {
+            environment = environment.getEnclosing();
+        }
         environment.assign(stmt.getName(),clazz);
         return null;
     }
@@ -122,6 +139,18 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         else {
             throw new R5JloxRuntimeError(expr.getName(),"Only instances have fields.");
         }
+    }
+
+    @Override
+    public Object visitSuperExpr(final Expr.Super<?, ?> expr) {
+        final int dist = locals.get(expr);
+        final R5JLoxClass clazz = (R5JLoxClass) environment.getAt(dist,"super");
+        final R5JLoxInstance inst = (R5JLoxInstance) environment.getAt(dist - 1,"self");
+        final R5JLoxFunction func = clazz.findMethod(expr.getMethod().getLexeme());
+        if(func == null) {
+            throw new R5JloxRuntimeError(expr.getMethod(),"Undefined property '" + expr.getMethod().getLexeme() + "'.");
+        }
+        return func.bind(inst);
     }
 
     @Override

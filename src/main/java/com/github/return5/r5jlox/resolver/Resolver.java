@@ -1,6 +1,5 @@
 package main.java.com.github.return5.r5jlox.resolver;
 import main.java.com.github.return5.r5jlox.errorhandler.ErrorHandler;
-import main.java.com.github.return5.r5jlox.errors.R5JloxRuntimeError;
 import main.java.com.github.return5.r5jlox.interpreter.Interpreter;
 import main.java.com.github.return5.r5jlox.token.Token;
 import main.java.com.github.return5.r5jlox.tree.Expr;
@@ -173,6 +172,18 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
     }
 
     @Override
+    public Void visitSuperExpr(Expr.Super<?, ?> expr) {
+        if(classType == ClassType.NONE) {
+            errorHandler.reportError(expr.getKeyword(), "Can't use 'super' outside of a class.");
+        }
+        else if(classType != ClassType.SUBCLASS) {
+            errorHandler.reportError(expr.getKeyword(), "Can't use 'super' in a class with no superclass.");
+        }
+        resolveLocal(expr, expr.getKeyword());
+        return null;
+    }
+
+    @Override
     public Void visitSelfExpr(Expr.Self<?> expr) {
         if(classType == ClassType.NONE) {
             errorHandler.reportError(expr.getKeyword(),"Can't use 'self' outside of a designation.");
@@ -251,11 +262,21 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
     }
 
     @Override
-    public Void visitDesignationStmt(Stmt.Designation<?> stmt) {
-        final ClassType enclosingClass = this.classType;
+    public Void visitDesignationStmt(Stmt.Designation<?,?> stmt) {
+        final ClassType enclosingClass = classType;
         this.classType = ClassType.CLASS;
         declare(stmt.getName());
         define(stmt.getName());
+        if(stmt.getSuperClass() != null) {
+            if(stmt.getSuperClass().getName().getLexeme().equals(stmt.getName().getLexeme())) {
+                errorHandler.reportError(stmt.getSuperClass().getName(),"A class Can't inherent from itself.");
+            }
+            this.classType = ClassType.SUBCLASS;
+            resolve(stmt.getSuperClass());
+            beginScope();
+            scopes.peek().put("super",true);
+        }
+
         beginScope();
         Objects.requireNonNull(scopes.peek()).put("self",true);
         for(final Stmt.Function<?> method : stmt.getMethods()) {
@@ -263,6 +284,9 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
             resolveFunction(method,declaration);
         }
         endScope();
+        if(stmt.getSuperClass() != null) {
+            endScope();
+        }
         this.classType = enclosingClass;
         return null;
     }

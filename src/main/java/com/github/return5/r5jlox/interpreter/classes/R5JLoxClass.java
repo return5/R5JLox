@@ -13,15 +13,18 @@ public class R5JLoxClass implements R5JLoxCallable {
 
     private final String name;
     private final Map<String,R5JLoxFunction> methods;
+    private final R5JLoxClass superClass;
 
     public R5JLoxClass(final String name) {
         this.name = name;
         this.methods = new HashMap<>();
+        this.superClass = null;
     }
 
-   public R5JLoxClass(final String name, final Map<String, R5JLoxFunction> methods) {
+   public R5JLoxClass(final String name, final R5JLoxClass superClass, final Map<String, R5JLoxFunction> methods) {
         this.name = name;
         this.methods = methods;
+        this.superClass = superClass;
    }
 
     public String getName() {
@@ -52,7 +55,14 @@ public class R5JLoxClass implements R5JLoxCallable {
         return instance.arity();
     }
 
+    private R5JLoxFunction findSuperClassMethod(final String name) {
+        if(this.superClass != null) {
+           return superClass.findMethod(name);
+        }
+        return null;
+    }
+
     public R5JLoxFunction findMethod(final String name) {
-        return methods.getOrDefault(name, null);
+        return methods.getOrDefault(name, findSuperClassMethod(name));
     }
 }

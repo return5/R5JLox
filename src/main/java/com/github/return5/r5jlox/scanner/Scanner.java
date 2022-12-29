@@ -53,6 +53,7 @@ public class Scanner {
             case '=' -> addToken(match('=') ? EQUAL_EQUAL : EQUAL);
             case '<' -> addToken(match('=') ? LESS_EQUAL : LESS);
             case '>' -> addToken(match('=') ? GREATER_EQUAL : GREATER);
+            case ':' -> addToken(PARENT);
             case '/' -> handleComment();
             case ' ', '\r', '\t' -> {
                 //do nothing with empty space

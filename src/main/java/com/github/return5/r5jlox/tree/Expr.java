@@ -19,6 +19,7 @@ public abstract class Expr{
 		R visitFunctionExpr(Function expr);
 		R visitGetExpr(Get<?> expr);
 		R visitSetExpr(Set<?> expr);
+		R visitSuperExpr(Super<?,?> expr);
 		R visitSelfExpr(Self<?> expr);
 	}
 
@@ -333,6 +334,29 @@ public abstract class Expr{
 
 		public <R> R accept(final Visitor<R> visitor) {
 			return visitor.visitFunctionExpr(this);
+		}
+	}
+
+	public static class Super<T,U> extends Expr {
+
+		final Token<T> keyword;
+		final Token<U> method;
+
+		public Super(final Token<T> keyword, final Token<U> method) {
+			this.keyword = keyword;
+			this.method = method;
+		}
+
+		public Token<T> getKeyword() {
+			return keyword;
+		}
+
+		public Token<U> getMethod() {
+			return method;
+		}
+
+		public <R> R accept(final Visitor<R> visitor) {
+			return visitor.visitSuperExpr(this);
 		}
 	}
 

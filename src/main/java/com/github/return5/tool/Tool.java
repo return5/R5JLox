@@ -19,6 +19,7 @@ public class Tool {
                 "Literal<T> : final T value",
                 "Unary<T> : final Token<T> operator, final Expr right",
                 "Set<T> : final Expr object, final Token<T> name, final Expr value",
+                "Super<T,U> : final Token<T> keyword, final Token<U> method",
                 "Self<T> : final Token<T> keyowrd",
                 "Variable<T> : final Token<T> name",
                 "Assign<T> : final Token<T> name, final Expr value",
@@ -33,7 +34,7 @@ public class Tool {
                 "If : final Expr condition, final Stmt thenBranch, final Stmt elseBranch",
                 "Say : final Expr expression",
                 "Stash<T> : final Token<T> name, final Expr initializer",
-                "Designation<T> : final Token<T> name, final List<Stmt.Function<?>> methods",
+                "Designation<T,U> : final Token<T> name, final Expr.Variable<U> superClass, final List<Stmt.Function<?>> methods",
                 "Block :final List<Stmt> statements",
                 "While : final Expr condition, final Stmt body"));
     }

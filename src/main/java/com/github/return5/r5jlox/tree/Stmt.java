@@ -16,7 +16,7 @@ public abstract class Stmt{
 		R visitWhileStmt(While stmt);
 		R visitFunctionStmt(Stmt.Function<?> stmt);
 		R visitReturnStmt(Return<?> stmt);
-		R visitDesignationStmt(Designation<?> stmt);
+		R visitDesignationStmt(Designation<?,?> stmt);
 	}
 
 	public abstract<R> R accept(final Visitor<R> visitor);
@@ -253,30 +253,28 @@ public abstract class Stmt{
 		}
 	}
 
-	public static class Designation<T> extends Stmt {
+	public static class Designation<T,U> extends Stmt {
 
 		final Token<T> name;
+		final Expr.Variable<U> superClass;
 		final List<Stmt.Function<?>> methods;
 
-		public Designation(final Token<T> name, final List<Stmt.Function<?>> methods) {
+		public Designation(final Token<T> name, final Expr.Variable<U> superClass, final List<Stmt.Function<?>> methods) {
 			this.name = name;
+			this.superClass = superClass;
 			this.methods = methods;
-		}
-
-		public List<Function<?>> getMethods() {
-			return methods;
 		}
 
 		public Token<T> getName() {
 			return name;
 		}
 
-		@Override
-		public String toString() {
-			return new StringJoiner(", ", Designation.class.getSimpleName() + "[", "]")
-					.add("name=" + name)
-					.add("methods=" + methods)
-					.toString();
+		public Expr.Variable<U> getSuperClass() {
+			return superClass;
+		}
+
+		public List<Stmt.Function<?>> getMethods() {
+			return methods;
 		}
 
 		public <R> R accept(final Visitor<R> visitor) {

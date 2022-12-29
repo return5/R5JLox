@@ -184,15 +184,24 @@ public class Parser{
         }
     }
 
+    private Expr.Variable<?> getSuperClass() {
+        if(match(PARENT)) {
+            consume(IDENTIFIER,"Expect superclass name.");
+            return new Expr.Variable<>(previous());
+        }
+        return null;
+    }
+
     private Stmt designationDeclaration() {
         final Token<?> name = consume(IDENTIFIER,"Expect designation name.");
+        final Expr.Variable<?> superClass = getSuperClass();
         consume(LEFT_BRACE,"expect '{' before designation body.");
         final List<Stmt.Function<?>> methods = new LinkedList<>();
         while(!check(RIGHT_BRACE) && !isAtEnd()) {
             methods.add(function("method"));
         }
         consume(RIGHT_BRACE,"Expect } after designation body.");
-        return new Stmt.Designation<>(name,methods);
+        return new Stmt.Designation<>(name,superClass,methods);
     }
 
     private Expr.Function functionBody(final String kind) {
@@ -276,6 +285,12 @@ public class Parser{
     }
 
     private Expr primary() {
+        if(match(SUPER)) {
+            final Token<?> keyword = previous();
+            consume(DOT,"Expect '.' after 'super'.");
+            final Token <?> method = consume(IDENTIFIER,"Expect superclass method name.");
+            return new Expr.Super<>(keyword,method);
+        }
         if(match(SELF)) {
             return new Expr.Self<>(previous());
         }
